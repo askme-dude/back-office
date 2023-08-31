@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TukinController;
 use App\Http\Controllers\UangMakanController;
 use App\Http\Controllers\Pegawai\PegawaiAlamatController;
+use App\Http\Controllers\HirarkiUnitKerjaController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +40,7 @@ Route::prefix('pegawai')->group(function (){
     Route::resource('alamat',PegawaiAlamatController::class)->only('index','create','store','edit','update','destroy');
     Route::post('alamat/getkota',[PegawaiAlamatController::class,'getKota'])->name('alamat.getkota');
 });
+Route::resource('master/hirarki-unit-kerja',HirarkiUnitKerjaController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
