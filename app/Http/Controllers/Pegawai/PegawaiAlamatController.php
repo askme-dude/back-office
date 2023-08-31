@@ -64,7 +64,8 @@ class PegawaiAlamatController extends Controller
         return Inertia::render('Pegawai/PegawaiAlamat/Index',[
             'title' => 'Alamat',
             'pegawaiAlamat' => $pegawaiAlamat,
-            'pegawaiAlamatDetail' => $pegawaiAlamatDetail
+            'pegawaiAlamatDetail' => $pegawaiAlamatDetail,
+            'paginate'=>$paginate
         ]);
     }
 

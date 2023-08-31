@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 
 const props = defineProps({
     pegawaiAlamat:'',
+    paginate:''
 })
 const tambahAlamat = ()=>{
     router.get(route('alamat.create'));
@@ -52,7 +53,7 @@ const toDelete = (id)=>{
 }
 
 const cari = ref('')
-const paginate = ref('10')
+const paginate = ref(props.paginate)
 watch(cari,debounce (value =>{
     console.log('triger');
         router.get(route('alamat.index'), {cari:value},{
@@ -147,7 +148,7 @@ const showDetail=(id)=>{
                     <Component
                     :is="link.url?'a':'span'"
                     v-for="link in pegawaiAlamat.links"
-                    :href="link.url"
+                    :href="link.url+'&paginate='+paginate"
                     v-html="link.label"
                     class="join-item btn btn-xs"
                     :class="{'btn-disabled': !link.url, 'btn-active':link.active}"
