@@ -6,12 +6,15 @@ import Swal from 'sweetalert2';
 import vSelect from 'vue-select'
 const props = defineProps({
     propinsi:'',
-    pegawai:''
+    pegawai:'',
+    kota:Object,
+    kecamatan:Object,
+    desa:Object,
 })
 const kota = ref([]);
 const kecamatan = ref([]);
 const desa = ref([]);
-const form = useForm('createAlamat',{
+const form = useForm({
     tipe_alamat:'',
     propinsi_id:'',
     kota_id:'',
@@ -52,10 +55,21 @@ watch(()=>form.propinsi_id,(value)=>{
         preserveState:true,
         preserveScroll:true,
         onSuccess:(response)=>{
+            form.kota_id = null;
+            form.kecamatan_id = null;
+            form.desa_id = null;
             kota.value = response.props.kota
         }
     });
 });
+const selectedPropinsi = computed({
+    get(){
+        return props.propinsi.find(prop => prop.id === form.propinsi_id)
+    },
+    set(propinsi){
+        form.propinsi_id = propinsi.id
+    }
+})
 watch(()=>form.kota_id,(value)=>{
     router.get(route('alamat.create'),{kota_id:value},{
         preserveState:true,
@@ -65,17 +79,40 @@ watch(()=>form.kota_id,(value)=>{
         }
     });
 });
-
+const selectedKota = computed({
+    get(){
+        return kota.value?.find(kot => kot.id === form.kota_id)
+    },
+    set(kota){
+        form.kota_id = kota.id
+    }
+})
 watch(()=>form.kecamatan_id,(value)=>{
     router.get(route('alamat.create'),{kecamatan_id:value},{
         preserveState:true,
         preserveScroll:true,
-        onSuccess:(response)=>{
+        onSuccess:(response)=>
+        {
             desa.value = response.props.desa
-        }
+        },
     });
 });
-
+const selectedKecamatan = computed({
+    get(){
+        return kecamatan.value.find(kec => kec.id === form.kecamatan_id)
+    },
+    set(kecamatan){
+        form.kecamatan_id = kecamatan.id
+    }
+})
+const selectedDesa = computed({
+    get(){
+        return  desa.value?.find(des => des.id === form.desa_id)
+    },
+    set(desa){
+        form.desa_id = desa.id
+    }
+})
 const back = ()=>{
     router.get(route('alamat.index'));
 }
@@ -87,41 +124,6 @@ const selectedPegawai = computed({
         form.pegawai_id = pegawai.id
     }
 })
-const selectedPropinsi = computed({
-    get(){
-        return props.propinsi.find(prop => prop.id === form.propinsi_id)
-    },
-    set(propinsi){
-        form.propinsi_id = propinsi.id
-    }
-})
-const selectedKota = computed({
-    get(){
-
-        return  props.kota?.find(kot => kot.id === form.kota_id)
-
-    },
-    set(kota){
-        form.kota_id = kota.id
-    }
-})
-const selectedKecamatan = computed({
-    get(){
-        return  props.kecamatan?.find(kec => kec.id === form.kecamatan_id)
-    },
-    set(kecamatan){
-        form.kecamatan_id = kecamatan.id
-    }
-})
-const selectedDesa = computed({
-    get(){
-        return  props.desa?.find(des => des.id === form.desa_id)
-    },
-    set(desa){
-        form.desa_id = desa.id
-    }
-})
-
 </script>
 
 <template>

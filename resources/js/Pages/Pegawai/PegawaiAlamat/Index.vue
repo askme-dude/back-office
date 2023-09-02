@@ -5,9 +5,6 @@ import { onMounted, ref, watch } from "vue";
 import { debounce } from "lodash";
 import Swal from "sweetalert2";
 
-const props = defineProps({
-    paginate:''
-})
 const tambahAlamat = ()=>{
     router.get(route('alamat.create'));
 }
@@ -52,7 +49,7 @@ const toDelete = (id)=>{
 }
 
 const cari = ref('')
-const paginate = ref(props.paginate)
+const paginate = ref(10)
 watch(cari,debounce (value =>{
     getDataPegawaiAlamat(route('alamat.getdata')+'?cari='+value +'&paginate='+paginate.value )
 },500));
@@ -148,7 +145,7 @@ const showDetail=(id)=>{
                     <Component
                     :is="link.url?'a':'span'"
                     v-for="link in pegawaiAlamat.links"
-                    :href="link.url+'&paginate='+paginate"
+                    :href="link.url"
                     v-html="link.label"
                     class="join-item btn btn-xs"
                     :class="{'btn-disabled': !link.url, 'btn-active':link.active}"
