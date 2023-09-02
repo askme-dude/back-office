@@ -24,7 +24,7 @@ const useRouteStore = defineStore("route-store", () => {
                 {
                     icon: ClipboardIcon,
                     label: "Test",
-                    href:'#'
+                    href:route('hirarki-unit-kerja.index')
                 },
             ],
         },

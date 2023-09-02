@@ -13,9 +13,15 @@ class HirarkiUnitKerjaController extends Controller
      */
     public function index(Request $request)
     {
-        $paginate = 10;
+        return Inertia::render('HirarkiUnitKerja/Index',[
+            'title'=>'Hirarki Unit Kerja',
+        ]);
+    }
+    public function getDataHirarkiUK(Request $request){
         if ($request->paginate){
             $paginate = $request->paginate;
+        }else{
+            $paginate = 10;
         }
         $hirarkiUnitKerja = HirarkiUnitKerja::query()->when($request->cari,function ($query,$cari){
             $query->orWhere('parent.nama','like',"%{$cari}%");
@@ -26,11 +32,7 @@ class HirarkiUnitKerjaController extends Controller
             ->select('hirarki_unit_kerja.id','child.nama as nama_child','parent.nama as nama_parent')
             ->orderBy('hirarki_unit_kerja.id','ASC')
             ->paginate($paginate);
-        return Inertia::render('HirarkiUnitKerja/Index',[
-            'hirarkiUnitKerja' =>$hirarkiUnitKerja,
-            'title'=>'Hirarki Unit Kerja',
-            'paginate'=>$paginate
-        ]);
+        return response()->json($hirarkiUnitKerja);
     }
 
     /**

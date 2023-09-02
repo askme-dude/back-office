@@ -1,12 +1,11 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
 import { router } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { debounce } from "lodash";
 import Swal from "sweetalert2";
 
 const props = defineProps({
-    pegawaiAlamat:'',
     paginate:''
 })
 const tambahAlamat = ()=>{
@@ -55,20 +54,21 @@ const toDelete = (id)=>{
 const cari = ref('')
 const paginate = ref(props.paginate)
 watch(cari,debounce (value =>{
-    console.log('triger');
-        router.get(route('alamat.index'), {cari:value},{
-            preserveState:true,
-            preserveScroll:true,
-            replace:true
-    });
+    getDataPegawaiAlamat(route('alamat.getdata')+'?cari='+value +'&paginate='+paginate.value )
 },500));
 watch(paginate,value =>{
-    router.get(route('alamat.index'), {paginate:value},{
-        preserveState:true,
-        preserveScroll:true,
-        replace:true
-    });
+    getDataPegawaiAlamat(route('alamat.getdata')+'?cari='+cari.value+'&paginate='+value )
 });
+const pegawaiAlamat = ref([])
+onMounted(
+    ()=>{
+        getDataPegawaiAlamat(route('alamat.getdata'));
+    }
+)
+const getDataPegawaiAlamat = async (value)=>{
+    const result = await axios.get(value)
+    pegawaiAlamat.value = result.data
+}
 const pegawaiAlamatDetail = ref([])
 const showDetail=(id)=>{
     router.get(route('alamat.index'),{pegawai_alamat_id:id},{

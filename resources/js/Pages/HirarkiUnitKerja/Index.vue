@@ -1,30 +1,29 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
 import Pagination from "@/Components/Pagination.vue";
-import { ref, watch } from "vue";
+import { onBeforeMount, onMounted, ref, watch } from "vue";
 import { debounce } from "lodash";
 import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     hirarkiUnitKerja:'',
-    paginate:''
 })
+
+const hirarki = ref([])
 const cari = ref('')
-const paginate = ref(props.paginate)
+const paginate = ref(10)
+onMounted(()=>{
+    getDataHirarki(route('hirarki.getdata'))
+})
+const getDataHirarki = async (value)=>{
+    const result = await axios.get(value);
+    hirarki.value = result.data
+}
 watch(cari,debounce (value =>{
-    console.log('triger');
-    router.get(route('hirarki-unit-kerja.index'), {cari:value},{
-        preserveState:true,
-        preserveScroll:true,
-        replace:true
-    });
+    getDataHirarki(route('hirarki.getdata')+'?cari='+value +'&paginate='+paginate.value )
 },500));
 watch(paginate,value =>{
-    router.get(route('hirarki-unit-kerja.index'), {paginate:value},{
-        preserveState:true,
-        preserveScroll:true,
-        replace:true
-    });
+    getDataHirarki(route('hirarki.getdata')+'?cari='+cari.value+'&paginate='+value )
 });
 </script>
 
@@ -69,7 +68,7 @@ watch(paginate,value =>{
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(hirarki,index) in hirarkiUnitKerja.data">
+                    <tr v-for="(hirarki,index) in hirarki.data">
                         <td>{{index+1}}</td>
                         <td>{{hirarki.nama_child}}</td>
                         <td>{{hirarki.nama_parent}}</td>
@@ -92,7 +91,20 @@ watch(paginate,value =>{
                     </tr>
                 </tbody>
             </table>
-            <Pagination :links="hirarkiUnitKerja.links" :paginate="10"/>
+            <div class="join flex justify-end">
+                <Component
+                    :is="link.url ? 'a' : 'span'"
+                    v-for="link in hirarki.links"
+                    @click="getDataHirarki(link.url + '&paginate=' + paginate +'&cari='+cari)"
+                    v-html="link.label"
+                    class="btn join-item btn-xs"
+                    :class="{
+                    'btn-disabled': !link.url,
+                    'btn-active': link.active,
+                }"
+                />
+            </div>
+<!--            <Pagination :links="hirarki.links" :paginate="10"/>-->
         </div>
     </MainCard>
 </template>
