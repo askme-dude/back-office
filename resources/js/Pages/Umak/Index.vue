@@ -6,7 +6,7 @@ import { debounce } from "lodash";
 import Swal from "sweetalert2";
 
 const tambahUmak = ()=>{
-    router.get('/umak/create');
+    router.get('/master/umak/create');
 }
 
 const toEdit = (umak)=>{
@@ -78,7 +78,7 @@ watch(paginate,value =>{
         <ul>
             <li><a>Beranda</a></li>
             <li>Master</li>
-            <li><span class="text-info">Uang Makan</span></li>
+            <li><span class="text-info">List Uang Makan</span></li>
         </ul>
     </div>
     

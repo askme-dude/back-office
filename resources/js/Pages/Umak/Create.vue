@@ -16,7 +16,7 @@ const form = useForm('createUmak',{
     nominal:'',
 });
 const simpanData = ()=>{
-    form.post('/umak',{
+    form.post('/master/umak',{
         preserveScroll:true,
         preserveState:true,
         replace:true,
@@ -52,7 +52,7 @@ const back = ()=>{
         <ul>
             <li><a>Beranda</a></li>
             <li>Master</li>
-            <li><Link href="/umak">Uang Makan</Link></li>
+            <li><Link href="/master/umak">List Uang Makan</Link></li>
             <li><span class="text-info">Tambah Uang Makan</span></li>
         </ul>
     </div>

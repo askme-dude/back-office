@@ -55,8 +55,8 @@ const back = ()=>{
     <div class="text-sm breadcrumbs">
         <ul>
             <li><a>Beranda</a></li>
-            <li>Masters</li>
-            <li><Link href="/tukin">Tunjangan Kinerja</Link></li>
+            <li>Master</li>
+            <li><Link href="/master/tukin">List Tunjangan Kinerja</Link></li>
             <li><span class="text-info">Edit Tunjangan Kinerja</span></li>
         </ul>
     </div>

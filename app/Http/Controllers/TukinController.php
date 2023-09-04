@@ -11,8 +11,15 @@ use Illuminate\Support\Facades\DB;
 
 class TukinController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
+        return Inertia::render('Tukin/Index',[
+            'title' => 'List Tunjangan Kinerja',
+            //'list_tukin' => $listTukin,
+        ]);
+    }
+
+    public function getDataTable(Request $request){
         $paginate = 10;
         if ($request->paginate){
             $paginate = $request->paginate;
@@ -23,11 +30,9 @@ class TukinController extends Controller
             $query->orWhere('keterangan','like',"%{$cari}%");
             })
             ->select('*')
+            ->orderBy('grade','asc')
             ->paginate($paginate);
-        return Inertia::render('Tukin/Index',[
-            'title' => 'Tunjangan Kinerja',
-            'list_tukin' => $listTukin,
-        ]);
+        return response()->json($listTukin);
     }
 
     public function create()

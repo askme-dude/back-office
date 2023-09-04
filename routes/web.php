@@ -33,9 +33,6 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::resource('tukin', TukinController::class)->only('index','create','store','edit','update','destroy');
-Route::resource('umak', UangMakanController::class)->only('index','create','store','edit','update','destroy');
-
 Route::prefix('pegawai')->group(function (){
     Route::get('alamat/getdata',[PegawaiAlamatController::class,'getDataPegawaiAlamat'])->name('alamat.getdata');
     Route::resource('alamat',PegawaiAlamatController::class)->only('index','create','store','edit','update','destroy','show');
@@ -43,6 +40,10 @@ Route::prefix('pegawai')->group(function (){
 Route::prefix('master')->group(function (){
     Route::get('hirarki-unit-kerja/getdata',[HirarkiUnitKerjaController::class,'getDataHirarkiUnitKerja'])->name('hirarki-unit-kerja.getdata');
     Route::resource('hirarki-unit-kerja',HirarkiUnitKerjaController::class)->except('show');
+    
+    Route::resource('tukin', TukinController::class)->only('index','create','store','edit','update','destroy');
+    Route::get('tukin/getdatatable',[TukinController::class,'getDataTable'])->name('tukin.getdatatable');
+    Route::resource('umak', UangMakanController::class)->only('index','create','store','edit','update','destroy');
 });
 
 Route::middleware('auth')->group(function () {

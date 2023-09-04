@@ -16,7 +16,7 @@ const form = useForm('createTukin',{
     keterangan:''
 });
 const simpanData = ()=>{
-    form.post('/tukin',{
+    form.post('/master/tukin',{
         preserveScroll:true,
         preserveState:true,
         replace:true,
@@ -52,7 +52,7 @@ const back = ()=>{
         <ul>
             <li><a>Beranda</a></li>
             <li>Master</li>
-            <li><Link href="/tukin">Tunjangan Kinerja</Link></li>
+            <li><Link href="/master/tukin">List Tunjangan Kinerja</Link></li>
             <li><span class="text-info">Tambah Tunjangan Kinerja</span></li>
         </ul>
     </div>
