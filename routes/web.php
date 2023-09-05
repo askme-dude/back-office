@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TukinController;
-use App\Http\Controllers\UangMakanController;
+use App\Http\Controllers\Master\TukinController;
+use App\Http\Controllers\Master\UangMakanController;
 use App\Http\Controllers\Pegawai\PegawaiAlamatController;
 use \App\Http\Controllers\Master\HirarkiUnitKerjaController;
 use Illuminate\Foundation\Application;

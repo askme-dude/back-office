@@ -12,7 +12,7 @@ it('can render uang makan list page', function () {
         ->get(route('umak.index'))
         ->assertInertia(fn(AssertableInertia $page) => $page
             ->component('Umak/Index')
-            ->has('uang_makan'));
+            ->has('listUmak'));
 });
 
 it('can handle uang makan store page', function () {
@@ -55,7 +55,7 @@ it('can handle uang makan delete request', function () {
     $umak = UangMakan::factory()->create();
 
     $response = $this->actingAs($user)
-        ->delete(route('umak.update', $umak));
+        ->delete(route('umak.destroy', $umak));
 
     $this->assertModelMissing($umak);
 

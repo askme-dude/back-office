@@ -12,7 +12,7 @@ it('can render tukin list page', function () {
         ->get(route('tukin.index'))
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->component('Tukin/Index')
-            ->has('tukin_list')
+            ->has('listTukin')
         );
 });
 

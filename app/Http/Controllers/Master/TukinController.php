@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Master;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\TukinStoreRequest;
 use App\Models\Tukin;
 use Illuminate\Http\Request;
