@@ -14,27 +14,31 @@ class UangMakanController extends Controller
 {
     public function index(Request $request)
     {
+        return Inertia::render('Umak/Index',[
+            'title' => 'Uang Makan',
+            //'list_umak' => $listUmak,
+        ]);
+    }
+
+    public function getDataTable(Request $request){
         $paginate = 10;
         if ($request->paginate){
             $paginate = $request->paginate;
         }
 
         $listUmak = UangMakan::query()->when($request->cari, function ($query,$cari){
-            $query->orWhere('golongan.nama','like',"%{$cari}%");
-            $query->orWhere('uang_makan.nominal','like',"%{$cari}%");
-            })
+        $query->orWhere('golongan.nama','like',"%{$cari}%");
+        $query->orWhere('uang_makan.nominal','like',"%{$cari}%");
+        })
 
-            ->join('golongan','golongan.id','=','uang_makan.golongan_id')
-            ->select('uang_makan.*',
-                'golongan.nama as nama_golongan',
+        ->join('golongan','golongan.id','=','uang_makan.golongan_id')
+        ->select('uang_makan.*',
+            'golongan.nama as nama_golongan',
 
-            )
-            ->paginate($paginate);
-
-        return Inertia::render('Umak/Index',[
-            'title' => 'Uang Makan',
-            'list_umak' => $listUmak,
-        ]);
+        )
+        ->orderBy('golongan.nama','asc')
+        ->paginate($paginate);
+        return response()->json($listUmak);
     }
 
     public function create()
@@ -52,6 +56,12 @@ class UangMakanController extends Controller
         $data = $request->validate([
             'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
             'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+        ],
+        [
+            'golongan_id.required'=>'data golongan harus diisi!',
+            'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
+            'nominal.required'=>'data nominal harus diisi!',
+            'nominal.integer'=>'data nominal harus bilangan bulat positif!',
         ]);
 
         try {
@@ -93,6 +103,12 @@ class UangMakanController extends Controller
         $data = $request->validate([
             'golongan_id' => ['required', 'integer', 'min:1', 'max:999'],
             'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999']
+        ],
+        [
+            'golongan_id.required'=>'data golongan harus diisi!',
+            'golongan_id.integer'=>'data golongan harus bilangan bulat positif!',
+            'nominal.required'=>'data nominal harus diisi!',
+            'nominal.integer'=>'data nominal harus bilangan bulat positif!',
         ]);
         
         try {

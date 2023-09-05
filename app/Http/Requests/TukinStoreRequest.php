@@ -14,4 +14,14 @@ class TukinStoreRequest extends FormRequest
             'keterangan' => [],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'grade.required'=>'data grade harus diisi!',
+            'grade.integer'=>'data grade harus bilangan bulat positif!',
+            'nominal.required'=>'data nominal harus diisi!',
+            'nominal.integer'=>'data nominal harus bilangan bulat positif!',
+        ];
+    }
 }

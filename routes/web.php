@@ -44,6 +44,7 @@ Route::prefix('master')->group(function (){
     Route::resource('tukin', TukinController::class)->only('index','create','store','edit','update','destroy');
     Route::get('tukin/getdatatable',[TukinController::class,'getDataTable'])->name('tukin.getdatatable');
     Route::resource('umak', UangMakanController::class)->only('index','create','store','edit','update','destroy');
+    Route::get('umak/getdatatable',[UangMakanController::class,'getDataTable'])->name('umak.getdatatable');
 });
 
 Route::middleware('auth')->group(function () {
