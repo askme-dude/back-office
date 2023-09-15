@@ -18,7 +18,7 @@ class PegawaiSaldoCutiController extends Controller
     public function index()
     {
         return Inertia::render('Pegawai/PegawaiSaldoCuti/Index',[
-            'title'=>'Saldo Cuti Pegawai'
+            'title'=>'Saldo PegawaiCuti Pegawai'
         ]);
     }
 

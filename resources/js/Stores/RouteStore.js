@@ -72,7 +72,7 @@ const useRouteStore = defineStore("route-store", () => {
                 },
                 {
                     icon: MapPinIcon,
-                    label: "Saldo Cuti",
+                    label: "Saldo PegawaiCuti",
                     href: route("saldo-cuti.index")
                 },
             ],

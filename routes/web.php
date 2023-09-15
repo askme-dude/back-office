@@ -14,6 +14,7 @@ use \App\Http\Controllers\Pegawai\PegawaiSuamiIstriController;
 use \App\Http\Controllers\Master\HariLiburController;
 use \App\Http\Controllers\Auth\LdapController;
 use \App\Http\Controllers\Pegawai\PegawaiSaldoCutiController;
+use \App\Http\Controllers\Pegawai\PegawaiCutiController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -60,6 +61,7 @@ Route::prefix('pegawai')->group(function (){
     Route::resource('suami-istri',PegawaiSuamiIstriController::class);
     Route::get('saldo-cuti/getdata',[PegawaiSaldoCutiController::class,'getDataPegawaiSaldoCuti'])->name('saldo-cuti.getdata');
     Route::resource('saldo-cuti',PegawaiSaldoCutiController::class)->except('show','destroy');
+    Route::get('/cuti/pengajuan',[PegawaiCutiController::class,'pengajuan'])->name('pegawai-cuti.pengajuan');
 });
 Route::prefix('master')->group(function (){
     Route::post('kota/getdata',[KotaController::class,'getKota'])->name('kota.getdata');
