@@ -46,7 +46,7 @@ let filteredJenisCuti = computed(() =>
         )
 )
 watch(()=>selected.value,(value)=>{
-    form.jenis_cuti_id = value.id
+    form.jenis_cuti_id = value.Y
 });
 </script>
 
