@@ -29,8 +29,8 @@ const props = defineProps({
                         </div>
                         <div
                             class="flex items-center space-x-2"
-                            v-if="can.create"
-                        >
+                            v-if="can.create">
+                            
                             <Link :href="route('role.create')">
                                 <button
                                     class="flex items-center rounded bg-green-500 px-4 py-2 uppercase text-white focus:outline-none"
@@ -40,7 +40,7 @@ const props = defineProps({
                                         data-icon="gridicons:create"
                                         data-inline="false"
                                     ></span>
-                                    Tambah Hak Akses
+                                    Tambah Role
                                 </button>
                             </Link>
                         </div>
