@@ -8,15 +8,28 @@ import { Head, useForm, router, usePage } from "@inertiajs/vue3";
 import { ref, computed, onMounted } from "vue";
 import Swal from "sweetalert2";
 
-const { role } = defineProps(['role']);
-
+const props = defineProps({
+    user: {
+        type: Object,
+        default: () => ({}),
+    },
+    role:{
+        type: Object,
+        default: () => ({}),
+    },
+    role_id:{
+        type: Object,
+        default: () => ({}),
+    }
+});
 
 const form = useForm({
-    name: "",
-    email: "",
-    password: "",
-    re_password:"",
-    role_id:"",
+    id: props.user.id,
+    name: props.user.name,
+    email: props.user.email,
+    password: props.user.password,
+    re_password: props.user.password,
+    role_id:props.role_id[0],
 });
 
 
@@ -27,7 +40,7 @@ const goBack = () => {
 const submit = () => {
     Swal.fire({
         title: "Apakah anda yakin?",
-        text: "Simpan data pengguna",
+        text: "Simpan perubahan data pengguna",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -37,11 +50,11 @@ const submit = () => {
     }).then((result) => {
         if (result.isConfirmed) {
 
-            form.post(route("user.store"), {
+            form.put(route("user.update",props.user.id), {
                 onSuccess: (response) => {
                     Swal.fire(
                         "Tersimpan!",
-                        "Pengguna baru berhasil disimpan.",
+                        "Data pengguna berhasil diubah.",
                         "success",
                     );
 
@@ -51,7 +64,7 @@ const submit = () => {
                     if (errors.query) {
                         Swal.fire({
                             title: "Gagal!",
-                            text: "Simpan pengguna baru gagal",
+                            text: "Simpan perubahan data pengguna gagal",
                             icon: "error",
                             confirmButtonText: "OK",
                         });
@@ -83,7 +96,7 @@ const submit = () => {
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="border-b border-gray-200 bg-white p-6">
                         <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                            Tambah Penguna
+                            Ubah Data Penguna
                         </h2>
                         <br>
                         <hr>

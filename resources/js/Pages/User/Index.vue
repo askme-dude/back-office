@@ -1,88 +1,167 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
+import {
+    ChevronUpDownIcon,
+    DocumentMagnifyingGlassIcon,
+} from "@heroicons/vue/24/outline/index.js";
+import Pagination from "@/Components/Pagination.vue";
+import ShowingResultTable from "@/Components/ShowingResultTable.vue";
+import { computed, ref, watch } from "vue";
+import PerPageOption from "@/Components/PerPageOption.vue";
+import { router, Link } from "@inertiajs/vue3";
+import { debounce } from "lodash";
+import SearchInputColumn from "@/Components/SearchInputColumn.vue";
 
-const props = defineProps({
-  users: {
-    type: Object,
-    default: () => ({}),
-  },
-  can: {
-    type: Object,
-    default: () => ({}),
-  },
-})
+defineProps(["user"]);
+
+const columns = [
+    { label: "Pengguna", column: "name" },
+    { label: "email", column: "email" },
+];
+const filterBy = ref({ label: "Nama Pengguna", column: "name" });
+const keyword = ref("");
+const perPage = ref(15);
+const sortBy = ref(null);
+const query = computed(() => {
+    return {
+        ...(keyword.value && {
+            filter: {
+                [filterBy.value.column]: keyword.value,
+            },
+        }),
+        ...(sortBy.value && { sort: sortBy.value }),
+        ...(perPage.value && { per_page: perPage.value }),
+    };
+});
+
+watch(
+    keyword,
+    debounce(() => fetchData(), 200),
+);
+
+watch(perPage, () => fetchData());
+
+const fetchData = (additional) => {
+    router.get(
+        route("user.index", {
+            _query: { ...query.value, ...additional },
+        }),
+        {},
+        {
+            only: ["user"],
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        },
+    );
+};
+
+const sort = (column) => {
+    if (sortBy.value === column.column) {
+        sortBy.value = "-" + column.column;
+    } else if (sortBy.value?.includes(column.column)) {
+        sortBy.value = null;
+    } else {
+        sortBy.value = column.column;
+    }
+
+    fetchData();
+};
+
+const edit = (id) => {
+    router.get(route('user.edit',id));
+}
+
 </script>
+
 <template>
+    <Head title="Data Pengguna" />
 
-    <MainCard>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Users
-            </h2>
-        </template>
+    <MainCard title="Data Pengguna">
+        <!-- TODO: fix responsive mobile view-->
+        <div class="mt-8">
+            <div class="grid gap-2 md:grid-cols-2 md:justify-items-end">
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-5">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="flex bg-gray-800 justify-between items=center p-5">
-                        <div class="flex space-x-2 items-center text-white">
-                            Users Settings Page! Here you can list, create, update or delete user!
-                        </div>
-                        <div
-                            class="flex items-center space-x-2"
-                            v-if="can.create"
-                        >
-                            <Link :href="route('user.create')">
-                                <button
-                                    class="flex items-center rounded bg-green-500 px-4 py-2 uppercase text-white focus:outline-none"
-                                >
-                                    <span
-                                        class="iconify mr-1"
-                                        data-icon="gridicons:create"
-                                        data-inline="false"
-                                    ></span>
-                                    Tambah Pengguna
-                                </button>
-                            </Link>
-                        </div>
-                    </div>
+                <Link
+                    class="justify-self-start"
+                    :href="route('user.create')"
+                    v-if="$page.props.auth.akses.gaji_create">
+                    <button class="btn btn-primary">Tambah</button>
+                </Link>
+
+                <div class="flex gap-2">
+                    <!-- Use this if doesnt need filter by column-->
+                    <!-- <SearchInput class="w-64" v-model="keyword" />-->
+                    <SearchInputColumn
+                        :options="columns"
+                        v-model:keyword="keyword"
+                        v-model:selected="filterBy"
+                    />
+                    <PerPageOption v-model="perPage" />
                 </div>
             </div>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-2">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="py-3 px-6">Name</th>
-                                <th scope="col" class="py-3 px-6">Email</th>
-                                <th v-if="can.edit || can.delete" scope="col" class="py-3 px-6">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="user in users.data" :key="user.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                <td data-label="Name" class="py-4 px-6">
-                                    {{ user.name }}
-                                </td>
-                                <td data-label="Email" class="py-4 px-6">
-                                    {{ user.email }}
-                                </td>
-                                <td
-                                    v-if="can.edit || can.delete"
-                                    class="py-4 px-6"
+            <div class="overflow-x-auto">
+                <table class="table mt-4">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th
+                                v-for="col in columns"
+                                :key="col.label"
+                                :class="{
+                                    'text-gray-900': sortBy?.includes(
+                                        col.column,
+                                    ),
+                                }"
+                            >
+                                <div
+                                    class="flex cursor-pointer justify-between"
+                                    @click="sort(col)"
                                 >
-                                    <div type="justify-start lg:justify-end" no-wrap>
-                                        <BreezeButton class="ml-4 bg-green-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.edit">
-                                            Edit
-                                        </BreezeButton>
-                                        <BreezeButton class="ml-4 bg-red-500 px-2 py-1 rounded text-white cursor-pointer" v-if="can.delete">
-                                            Delete
-                                        </BreezeButton>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    {{ col.label }}
+                                    <ChevronUpDownIcon class="w-4" />
+                                </div>
+                            </th>
+                            <th v-if="$page.props.auth.akses.pengguna_edit || $page.props.auth.akses.pengguna_delete">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(row, i) in user.data" :key="row.id">
+                            <td>{{ user.from + i }}</td>
+                            <td v-for="col in columns" :key="col.label">
+                                {{ row[col.column] }}
+                            </td>
+
+                            <td v-if="$page.props.auth.akses.pengguna_edit || $page.props.auth.akses.pengguna_delete">
+                                <button
+                                    @click.prevent="edit(row.id)"
+                                    class="btn btn-primary btn-xs mr-2 tooltip" data-tip="Edit Data Pengguna"
+                                    v-if="$page.props.auth.akses.pengguna_edit">Edit
+                                </button>
+                                <button
+                                    v-if="$page.props.auth.akses.pengguna_delete"
+                                    class="btn btn-error btn-xs tooltip" data-tip="Hapus Data Pengguna"
+                                    @click="destroy(row.id)">
+                                    Hapus
+                                </button>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 grid gap-2 md:grid-cols-2 md:justify-items-end">
+                <ShowingResultTable
+                    :from="user.from"
+                    :to="user.to"
+                    :total="user.total"
+                    class="justify-self-start"
+                />
+
+                <Pagination
+                    :links="user.links"
+                    @goToPage="(page) => fetchData({ page })"
+                />
             </div>
         </div>
     </MainCard>

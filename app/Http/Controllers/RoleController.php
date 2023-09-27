@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use DB;
 
 class RoleController extends Controller
 {
@@ -31,6 +32,7 @@ class RoleController extends Controller
         $roles->latest();
         $roles = $roles->paginate(100)->onEachSide(2)->appends(request()->query());
         return Inertia::render('Role/Index', [
+            'title'=> 'Role',
             'roles' => $roles,
             'can' => [
                 'create' => Auth::user()->can('role create'),
@@ -110,7 +112,26 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try {
+            $role = Role::find($id);
+            $permission = Permission::get();
+            $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+                ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
+                ->all();
+            return Inertia::render('Role/Edit', [
+                'title' => 'Ubah Role',
+                'role'=> $role,
+                'permissions' => $permission,
+                'rolePermissions' => $rolePermissions
+            ]);
+        } catch (QueryException $e) {
+            Log::error('terjadi kesalahan pada koneksi database  ketika load edit data :' . $e->getMessage());
+            return redirect()->back()->withErrors([
+                'query' => 'Load data gagal'
+            ]);
+        }
+
+
     }
 
     /**

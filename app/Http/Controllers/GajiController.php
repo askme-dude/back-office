@@ -83,7 +83,7 @@ class GajiController extends Controller
     {
         try {
             return Inertia::render('Gaji/Edit',[
-                'title' => 'Tambah Gaji',
+                'title' => 'Ubah Gaji',
                 'gaji' => $gaji,
                 'golongan' => fn () => Golongan::all()
             ]);

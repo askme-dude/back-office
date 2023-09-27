@@ -11,9 +11,6 @@ const routes = useRouteStore();
 const akses = computed(() => page.props.auth.akses)
 
 function checkPermission(strPermission, permission) {
-    // console.log('check permission:' + strPermission);
-    // console.log(akses);
-
     if (permission[strPermission]){
         return true;
     }else{

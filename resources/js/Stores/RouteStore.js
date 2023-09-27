@@ -172,9 +172,6 @@ const useRouteStore = defineStore("route-store", () => {
     ];
 
     function checkPermission(strPermission, permission) {
-        console.log('check permission:' + strPermission);
-        console.log(permission[strPermission]);
-
         if (permission[strPermission]){
             return true;
         }else{

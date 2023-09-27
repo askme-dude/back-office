@@ -9,44 +9,37 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    title:String
 });
 </script>
 <template>
-    <MainCard>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Role
-            </h2>
-        </template>
-        <div class="py-12">
-            <div class="mx-auto mb-5 max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div
-                        class="items=center flex justify-between bg-gray-800 p-5"
-                    >
-                        <div class="flex items-center space-x-2 text-white">
-                            Master Role
-                        </div>
-                        <div
-                            class="flex items-center space-x-2"
-                            v-if="can.create"
-                        >
-                            <Link :href="route('role.create')">
-                                <button
-                                    class="flex items-center rounded bg-green-500 px-4 py-2 uppercase text-white focus:outline-none"
-                                >
-                                    <span
-                                        class="iconify mr-1"
-                                        data-icon="gridicons:create"
-                                        data-inline="false"
-                                    ></span>
-                                    Tambah Hak Akses
-                                </button>
-                            </Link>
-                        </div>
-                    </div>
+    <div class="breadcrumbs text-sm">
+        <ul>
+            <li><a href="/">Beranda</a></li>
+            <li><a href="/role">Roles</a></li>
+        </ul>
+    </div>
+
+    <MainCard :title="title">
+        <div class="overflow-x-auto">
+            <div class="py-4">
+                <div
+                    class="flex items-center space-x-2"
+                    v-if="can.create">
+                    <Link :href="route('role.create')">
+                        <button
+                            class="btn btn-primary">
+                            <span
+                                class="iconify mr-1"
+                                data-icon="gridicons:create"
+                                data-inline="false"
+                            ></span>
+                            Tambah Role
+                        </button>
+                    </Link>
                 </div>
             </div>
+
             <div class="mx-auto mb-2 max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <table
