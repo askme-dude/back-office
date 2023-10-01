@@ -30,10 +30,6 @@ class DatabaseSeeder extends Seeder
         $this->call(GolonganSeeder::class);
         $this->call(JenisKpSeeder::class);
         $this->call(InstansiSeeder::class);
-        // $this->call(PropinsiSeeder::class);
-//        $this->call(KotaSeeder::class);
-//        $this->call(KecamatanSeeder::class);
-//        $this->call(DesaSeeder::class);
         $this->call(LatihanStrukturalSeeder::class);
         $this->call(SatuanKerjaSeeder::class);
         $this->call(ProfesiSeeder::class);
@@ -53,26 +49,7 @@ class DatabaseSeeder extends Seeder
         $this->call(StatusPegawaiSeeder::class);
         $this->call(JenisUnitKerjaSeeder::class);
         $this->call(UnitKerjaSeeder::class);
-        $this->call(HirarkiUnitKerjaSeeder::class);
         $this->call(BankSeeder::class);
-        // $this->call(KotaSeeder::class);
-        // $this->call(KecamatanSeeder::class);
-        // $this->call(DesaSeeder::class);
-        // $this->call(RefDokumenSeeder::class);
-        // $this->call(JenisKursusSeeder::class);
-        // $this->call(AgamaSeeder::class);
-        // $this->call(JenisPegawaiSeeder::class);
-        // $this->call(JenisJabatanSeeder::class);
-        // $this->call(TingkatPendidikanSeeder::class);
-        // $this->call(JenisKawinSeeder::class);
-        // $this->call(JenisKepanitiaanSeeder::class);
-        // $this->call(JenisDiklatSeeder::class);
-        // $this->call(JenisDokumenSeeder::class);
-        // $this->call(TaspenSeeder::class);
-        // $this->call(GolonganSeeder::class);
-        // $this->call(JenisKpSeeder::class);
-        // $this->call(InstansiSeeder::class);
-        // $this->call(PropinsiSeeder::class);
 
         Pegawai::factory(100)->create();
         $this->call(JenisCutiSeeder::class);

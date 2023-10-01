@@ -12,6 +12,8 @@ onMounted(() => {
         emit("update:modelValue", per_page);
     }
 });
+
+const options = [15, 30, 50, 100];
 </script>
 
 <template>
@@ -20,9 +22,6 @@ onMounted(() => {
         @change="$emit('update:modelValue', $event.target.value)"
         class="select select-bordered"
     >
-        <option>15</option>
-        <option>30</option>
-        <option>50</option>
-        <option>100</option>
+        <option v-for="opt in options" :key="opt">{{ opt }}</option>
     </select>
 </template>

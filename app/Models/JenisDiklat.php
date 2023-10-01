@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class JenisDiklat extends Model
 {
+    use HasFactory;
+
     protected $table = 'jenis_diklat';
     protected $guarded = [];
-    protected $primaryKey = 'id';
-    protected $keyType = 'int';
-    public $incrementing = true;
 }

@@ -10,6 +10,7 @@
 namespace App\Models;
 
 use AzisHapidin\IndoRegion\Traits\RegencyTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Kota extends Model
 {
-    use RegencyTrait;
+    use RegencyTrait, HasFactory;
 
     /**
      * Table name.
@@ -25,6 +26,7 @@ class Kota extends Model
      * @var string
      */
     protected $table = 'kota';
+    public $timestamps = false;
 
     /**
      * The attributes that should be hidden for arrays.
@@ -54,6 +56,7 @@ class Kota extends Model
     {
         return $this->hasMany(Kecamatan::class);
     }
+
     public function pegawai_alamat()
     {
         return $this->hasMany(PegawaiAlamat::class);

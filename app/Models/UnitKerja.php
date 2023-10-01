@@ -4,23 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class UnitKerja extends Model
 {
+    use HasFactory, HasRecursiveRelationships;
+
     protected $table = 'unit_kerja';
     protected $guarded = [];
-    protected $primaryKey = 'id';
-    protected $keyType = 'int';
-    public $incrementing = true;
-    public function jenis_unit_kerja()
+
+    public function jenisUnitKerja()
     {
         return $this->belongsTo(JenisUnitKerja::class);
-    }
-    public function child_hirarki()
-    {
-        return $this->hasMany(HirarkiUnitKerja::class, 'child_unit_kerja_id');
-    }public function parent_hirarki()
-    {
-        return $this->hasMany(HirarkiUnitKerja::class, 'parent_unit_kerja_id');
     }
 }

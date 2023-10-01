@@ -1,275 +1,196 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
 import { router } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
-import { debounce } from "lodash";
-import Swal from "sweetalert2";
+import { computed, ref } from "vue";
+import Breadcrumb from "@/Components/Breadcrumb.vue";
+import PerPageOption from "@/Components/PerPageOption.vue";
+import ShowingResultTable from "@/Components/ShowingResultTable.vue";
+import Pagination from "@/Components/Pagination.vue";
+import SearchInput from "@/Components/SearchInput.vue";
+import { useConfirm } from "@/Composables/sweetalert.ts";
 
-const props = defineProps({
-    pegawaiAlamat: "",
-});
+const props = defineProps(["pegawaiAlamat"]);
+
+const perPage = ref(15);
+const keyword = ref("");
+const selectedAlamat = ref(null);
 const tambahAlamat = () => {
     router.get(route("alamat.create"));
 };
 const toEdit = (id) => {
     router.get(route("alamat.edit", id));
 };
-const toDelete = (id) => {
-    Swal.fire({
-        title: "Apakah Anda Yakin?",
-        text: "hapus data pegawai",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        cancelButtonText: "Batal",
-        confirmButtonText: "Ya",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            router.delete(route("alamat.destroy", id), {
-                onSuccess: (response) => {
-                    Swal.fire(
-                        "Dihapus!",
-                        "data pegawai berhasil dihapus.",
-                        "success",
-                    );
-                },
-                onError: (errors) => {
-                    if (errors.query) {
-                        Swal.fire({
-                            title: "Gagal!",
-                            text: "alamat pegawai gagal dihapus",
-                            icon: "error",
-                            confirmButtonText: "OK",
-                        });
-                    }
-                },
-            });
-        }
+
+const query = computed(() => {
+    return {
+        ...(keyword.value && {
+            filter: {
+                keyword: keyword.value,
+            },
+        }),
+        ...(perPage.value && { per_page: perPage.value }),
+    };
+});
+
+const fetchData = (params = {}) => {
+    router.get(
+        route("alamat.index", {
+            _query: { ...query.value, ...params },
+        }),
+        {},
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        },
+    );
+};
+const toDelete = async (id) => {
+    const confirmed = await useConfirm({ text: "Hapus data alamat" });
+
+    router.delete(route("alamat.destroy", id), {
+        onBefore: () => confirmed,
     });
 };
 
-const cari = ref("");
-const paginate = ref("10");
-watch(
-    cari,
-    debounce((value) => {
-        console.log("triger");
-        router.get(
-            route("alamat.index"),
-            { cari: value },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true,
-            },
-        );
-    }, 500),
-);
-watch(paginate, (value) => {
-    router.get(
-        route("alamat.index"),
-        { paginate: value },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-        },
-    );
-});
-const pegawaiAlamatDetail = ref([]);
-const showDetail = (id) => {
-    router.get(
-        route("alamat.index"),
-        { pegawai_alamat_id: id },
-        {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-            only: ["pegawaiAlamatDetail"],
-            onSuccess: (response) => {
-                pegawaiAlamatDetail.value = response.props.pegawaiAlamatDetail;
-            },
-        },
-    );
+const showDetail = (alamat) => {
+    selectedAlamat.value = alamat;
     modal_alamat.showModal();
 };
 </script>
+
 <template>
-    <div class="breadcrumbs text-sm">
-        <ul>
-            <li><a>Beranda</a></li>
-            <li>Pegawai</li>
-            <li><span class="text-info">Alamat</span></li>
-        </ul>
-    </div>
-    <MainCard>
-        <div class="overflow-x-auto">
-            <div class="flex justify-between py-4">
-                <div class="justify-start">
-                    <button class="btn btn-primary" @click="tambahAlamat">
-                        Tambah
-                    </button>
-                </div>
-                <div class="justify-end">
-                    <input
-                        v-model="cari"
-                        type="text"
-                        placeholder="Cari"
-                        class="input input-bordered mr-2 w-auto max-w-xs"
-                    />
-                    <select
-                        v-model="paginate"
-                        class="select select-bordered w-auto max-w-xs"
-                    >
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
+    <Head title="Alamat Pegawai" />
+    <Breadcrumb
+        :lists="[
+            { label: 'Beranda', url: route('dashboard') },
+            { label: 'Pegawai', url: route('pegawai.index') },
+            { label: 'Alamat' },
+        ]"
+    />
+    <MainCard title="Daftar Alamat Pegawai">
+        <div class="flex justify-between py-4">
+            <div>
+                <button
+                    class="btn btn-primary btn-outline"
+                    @click="tambahAlamat"
+                >
+                    Rekam Alamat Baru
+                </button>
             </div>
-            <table class="table" aria-describedby="Tabel Alamat Pegawai">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Nama</th>
-                        <th scope="col">Tipe</th>
-                        <th scope="col">Propinsi</th>
-                        <th scope="col">Kota/Kabupaten</th>
-                        <th scope="col">Kecamatan</th>
-                        <th scope="col">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        class="hover"
-                        v-for="(alamat, index) in pegawaiAlamat.data"
-                    >
-                        <th scope="col">{{ index + 1 }}</th>
-                        <th scope="col">
-                            {{ alamat.nama_depan + " " + alamat.nama_belakang }}
-                        </th>
-                        <th scope="col" v-if="alamat.tipe_alamat === 'D'">
-                            Domisili
-                        </th>
-                        <th scope="col" v-else-if="alamat.tipe_alamat === 'K'">
-                            Kampung
-                        </th>
-                        <td>{{ alamat.nama_propinsi }}</td>
-                        <td>{{ alamat.nama_kota }}</td>
-                        <td>{{ alamat.nama_kecamatan }}</td>
-                        <td>
-                            <div class="dropdown dropdown-left">
-                                <label tabindex="0" class="btn btn-xs m-1"
-                                    >Aksi</label
-                                >
-                                <ul
-                                    tabindex="0"
-                                    class="w-30 menu dropdown-content rounded-box z-[1] bg-base-100 p-2 shadow"
-                                >
-                                    <li>
-                                        <a
-                                            href="javascript:void(0)"
-                                            @click="toEdit(alamat.id)"
-                                            >Edit</a
-                                        >
-                                    </li>
-                                    <li>
-                                        <a @click="showDetail(alamat.id)"
-                                            >Detail</a
-                                        >
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="javascript:void(0)"
-                                            @click="toDelete(alamat.id)"
-                                            >Hapus</a
-                                        >
-                                    </li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="join flex justify-end">
-                <Component
-                    :is="link.url ? 'a' : 'span'"
-                    v-for="link in pegawaiAlamat.links"
-                    :href="link.url"
-                    v-html="link.label"
-                    class="btn join-item btn-xs"
-                    :class="{
-                        'btn-disabled': !link.url,
-                        'btn-active': link.active,
-                    }"
-                />
+            <div class="flex gap-2">
+                <SearchInput v-model="keyword" :search="() => fetchData()" />
+                <PerPageOption v-model="perPage" @change="() => fetchData()" />
             </div>
+        </div>
+        <table class="table" aria-describedby="Tabel Alamat Pegawai">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Nama</th>
+                    <th scope="col">Tipe</th>
+                    <th scope="col">Alamat</th>
+                    <th scope="col">Propinsi</th>
+                    <th scope="col">Kota/Kabupaten</th>
+                    <th scope="col">Kecamatan</th>
+                    <th scope="col">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr
+                    class="hover"
+                    v-for="(row, i) in pegawaiAlamat.data"
+                    :key="row.id"
+                >
+                    <td>{{ pegawaiAlamat.from + i }}</td>
+                    <td>{{ row.pegawai.nama }}</td>
+                    <td>{{ row.tipe_alamat }}</td>
+                    <td>{{ row.alamat }}</td>
+                    <td>{{ row.propinsi.nama }}</td>
+                    <td>{{ row.kota.nama }}</td>
+                    <td>{{ row.kecamatan.nama }}</td>
+                    <td>
+                        <div class="dropdown-left dropdown">
+                            <label tabindex="0" class="btn btn-xs m-1">
+                                Aksi
+                            </label>
+                            <ul
+                                tabindex="0"
+                                class="w-30 menu dropdown-content rounded-box z-[1] bg-base-100 p-2 shadow"
+                            >
+                                <li>
+                                    <span @click="toEdit(row.id)"> Edit </span>
+                                </li>
+                                <li>
+                                    <span @click="showDetail(row)">
+                                        Detail
+                                    </span>
+                                </li>
+                                <li>
+                                    <span @click="toDelete(row.id)">
+                                        Hapus
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-4 flex justify-between">
+            <ShowingResultTable
+                :from="pegawaiAlamat.from"
+                :to="pegawaiAlamat.to"
+                :total="pegawaiAlamat.total"
+            />
+            <Pagination
+                :links="pegawaiAlamat.links"
+                @goToPage="(page) => fetchData({ page })"
+            />
         </div>
     </MainCard>
     <!-- Open the modal using ID.showModal() method -->
     <dialog id="modal_alamat" class="modal">
         <form method="dialog" class="modal-box">
-            <div class="overflow-x-auto">
-                <table class="w-11/12">
-                    <caption class="mb-4 text-lg font-bold">
-                        Detail Pegawai
-                    </caption>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tr>
-                        <td class="">Nama Pegawai</td>
-                        <td
-                            v-if="pegawaiAlamatDetail"
-                            v-html="
-                                pegawaiAlamatDetail.nama_depan +
-                                ' ' +
-                                pegawaiAlamatDetail.nama_belakang
-                            "
-                        ></td>
-                    </tr>
-                    <tr>
-                        <td>Tipe Alamat</td>
-                        <td v-if="pegawaiAlamatDetail.tipe_alamat === 'D'">
-                            Domisili
-                        </td>
-                        <td v-if="pegawaiAlamatDetail.tipe_alamat === 'K'">
-                            Kampung
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Propinsi</td>
-                        <td v-html="pegawaiAlamatDetail.nama_propinsi"></td>
-                    </tr>
-                    <tr>
-                        <td>Kota/Kabupaten</td>
-                        <td v-html="pegawaiAlamatDetail.nama_kota"></td>
-                    </tr>
-                    <tr>
-                        <td>Kecamatan</td>
-                        <td v-html="pegawaiAlamatDetail.nama_kecamatan"></td>
-                    </tr>
-                    <tr>
-                        <td>Desa</td>
-                        <td v-html="pegawaiAlamatDetail.nama_desa"></td>
-                    </tr>
-                    <tr>
-                        <td>Kode Pos</td>
-                        <td v-html="pegawaiAlamatDetail.kode_pos"></td>
-                    </tr>
-                    <tr>
-                        <td>Alamat</td>
-                        <td v-html="pegawaiAlamatDetail.alamat"></td>
-                    </tr>
-                </table>
+            <h1 class="mb-4 text-center text-lg font-bold">Detail Pegawai</h1>
+            <div v-if="selectedAlamat" class="flex flex-col gap-1">
+                <div class="flex">
+                    <div class="w-1/3">Nama Pegawai</div>
+                    <div class="w-2/3">{{ selectedAlamat.pegawai.nama }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Alamat</div>
+                    <div class="w-2/3">{{ selectedAlamat.alamat }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Tipe Alamat</div>
+                    <div class="w-2/3">{{ selectedAlamat.tipe_alamat }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Propinsi</div>
+                    <div class="w-2/3">{{ selectedAlamat.propinsi.nama }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Kota/Kabupaten</div>
+                    <div class="w-2/3">{{ selectedAlamat.kota.nama }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Kecamatan</div>
+                    <div class="w-2/3">{{ selectedAlamat.kecamatan.nama }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Desa</div>
+                    <div class="w-2/3">{{ selectedAlamat.desa.nama }}</div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/3">Kode Pos</div>
+                    <div class="w-2/3">{{ selectedAlamat.kode_pos }}</div>
+                </div>
             </div>
             <div class="modal-action">
-                <button class="btn btn-primary btn-sm">Tutup</button>
+                <button class="btn btn-neutral btn-outline btn-sm">
+                    Tutup
+                </button>
             </div>
         </form>
     </dialog>

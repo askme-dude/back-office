@@ -7,9 +7,9 @@
  *
  */
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDesaTables extends Migration
 {
@@ -20,14 +20,10 @@ class CreateDesaTables extends Migration
      */
     public function up()
     {
-        Schema::create('desa', function(Blueprint $table){
+        Schema::create('desa', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('kecamatan_id');
+            $table->foreignId('kecamatan_id')->constrained('kecamatan')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('nama', 50);
-            $table->foreign('kecamatan_id')
-                ->references('id')
-                ->on('kecamatan')
-                ->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

@@ -10,33 +10,21 @@
 namespace App\Models;
 
 use AzisHapidin\IndoRegion\Traits\VillageTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Kecamatan;
 
-/**
- * Desa Model.
- */
 class Desa extends Model
 {
-    use VillageTrait;
+    use VillageTrait, HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'desa';
+    public $timestamps = false;
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
     protected $hidden = [
         'kecamatan_id'
     ];
 
-	/**
+    /**
      * Desa belongs to Kecamatan.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -45,8 +33,9 @@ class Desa extends Model
     {
         return $this->belongsTo(Kecamatan::class);
     }
+
     public function pegawai_alamat()
     {
         return $this->hasMany(PegawaiAlamat::class);
-}
+    }
 }

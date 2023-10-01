@@ -1,17 +1,16 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
-import {
-    ChevronUpDownIcon,
-    DocumentMagnifyingGlassIcon,
-} from "@heroicons/vue/24/outline/index.js";
+import { EyeIcon } from "@heroicons/vue/24/outline/index.js";
 import Pagination from "@/Components/Pagination.vue";
 import ShowingResultTable from "@/Components/ShowingResultTable.vue";
-import { computed, ref, watch } from "vue";
+import { ref } from "vue";
 import PerPageOption from "@/Components/PerPageOption.vue";
-import { router } from "@inertiajs/vue3";
-import { debounce } from "lodash";
+import { Link, router } from "@inertiajs/vue3";
 import SearchInputColumn from "@/Components/SearchInputColumn.vue";
 import { useLocaleDateTime } from "@/Composables/filters.ts";
+import { useQuery } from "@/Composables/tablequery.ts";
+import HeadColumn from "@/Components/HeadColumn.vue";
+import BodyRow from "@/Components/BodyRow.vue";
 
 defineProps(["asn"]);
 
@@ -28,34 +27,19 @@ const columns = [
         cell: (val) => useLocaleDateTime(new Date(val)),
     },
 ];
+
+const isLoading = ref(false);
+
 const filterBy = ref({ label: "Nama ASN", column: "nama" });
 const keyword = ref("");
 const perPage = ref(15);
 const sortBy = ref(null);
-const isLoading = ref(false);
-const query = computed(() => {
-    return {
-        ...(keyword.value && {
-            filter: {
-                [filterBy.value.column]: keyword.value,
-            },
-        }),
-        ...(sortBy.value && { sort: sortBy.value }),
-        ...(perPage.value && { per_page: perPage.value }),
-    };
-});
+const query = useQuery({ keyword, filterBy, sortBy, perPage });
 
-watch(
-    keyword,
-    debounce(() => fetchData(), 200),
-);
-
-watch(perPage, () => fetchData());
-
-const fetchData = (additional) => {
+const fetchData = (param = {}) => {
     router.get(
         route("siasn.asn.index", {
-            _query: { ...query.value, ...additional },
+            _query: { ...query.value, ...param },
         }),
         {},
         {
@@ -81,24 +65,10 @@ const syncAllData = () => {
         },
     );
 };
-
-const sort = (column) => {
-    if (sortBy.value === column.column) {
-        sortBy.value = "-" + column.column;
-    } else if (sortBy.value?.includes(column.column)) {
-        sortBy.value = null;
-    } else {
-        sortBy.value = column.column;
-    }
-
-    fetchData();
-};
 </script>
 
 <template>
-    <Head>
-        <title>Data ASN - SIASN</title>
-    </Head>
+    <Head title="Data ASN - SIASN" />
 
     <MainCard title="Data ASN berdasarkan SIASN">
         <!-- TODO: fix responsive mobile view-->
@@ -113,14 +83,16 @@ const sort = (column) => {
                     <span class="loading loading-spinner" v-if="isLoading" />
                 </button>
                 <div class="flex gap-2">
-                    <!-- Use this if doesnt need filter by column-->
-                    <!-- <SearchInput class="w-64" v-model="keyword" />-->
                     <SearchInputColumn
                         :options="columns"
                         v-model:keyword="keyword"
                         v-model:selected="filterBy"
+                        :search="() => fetchData()"
                     />
-                    <PerPageOption v-model="perPage" />
+                    <PerPageOption
+                        v-model="perPage"
+                        @change="() => fetchData()"
+                    />
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -128,48 +100,38 @@ const sort = (column) => {
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th
+                            <HeadColumn
                                 v-for="col in columns"
+                                v-model="sortBy"
                                 :key="col.label"
-                                :class="{
-                                    'text-gray-900': sortBy?.includes(
-                                        col.column,
-                                    ),
-                                }"
-                            >
-                                <div
-                                    class="flex cursor-pointer justify-between"
-                                    @click="sort(col)"
-                                >
-                                    {{ col.label }}
-                                    <ChevronUpDownIcon class="w-4" />
-                                </div>
-                            </th>
+                                :content="col"
+                                @click="() => fetchData()"
+                            />
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(row, i) in asn.data" :key="row.id">
-                            <td>{{ asn.from + i }}</td>
-                            <td v-for="col in columns" :key="col.label">
-                                <template v-if="col.cell">
-                                    {{ col.cell(row[col.column]) }}
-                                </template>
-                                <template v-else>
-                                    {{ row[col.column] }}
-                                </template>
+                        <tr v-if="asn.data.length < 1">
+                            <td colspan="9" class="text-center">
+                                Data tidak ditemukan
                             </td>
+                        </tr>
+                        <tr v-else v-for="(row, i) in asn.data" :key="row.id">
+                            <td>{{ asn.from + i }}</td>
+                            <BodyRow
+                                v-for="col in columns"
+                                :data="row"
+                                :content="col"
+                            />
                             <td>
                                 <div
                                     class="tooltip tooltip-left"
-                                    data-tip="Lihat detil"
+                                    data-tip="Detil"
                                 >
                                     <Link
                                         :href="route('siasn.asn.show', row.id)"
                                     >
-                                        <DocumentMagnifyingGlassIcon
-                                            class="w-5 text-primary"
-                                        />
+                                        <EyeIcon class="w-5 text-primary" />
                                     </Link>
                                 </div>
                             </td>

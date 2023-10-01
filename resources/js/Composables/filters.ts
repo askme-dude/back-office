@@ -5,3 +5,19 @@ export function useLocaleDateTime(date: Date): string {
         dateStyle: "medium",
     });
 }
+
+export function useLocaleDate(date: Date): string {
+    return date.toLocaleDateString("id", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    });
+}
+
+export function useLongLocalDate(date: Date): string {
+    return date.toLocaleDateString("id", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
+}

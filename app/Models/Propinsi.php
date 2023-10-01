@@ -10,20 +10,20 @@
 namespace App\Models;
 
 use AzisHapidin\IndoRegion\Traits\ProvinceTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Propinsi Model.
- */
 class Propinsi extends Model
 {
-    use ProvinceTrait;
+    use ProvinceTrait, HasFactory;
+
     /**
      * Table name.
      *
      * @var string
      */
     protected $table = 'propinsi';
+    public $timestamps = false;
 
     /**
      * Propinsi has many regencies.
@@ -34,6 +34,7 @@ class Propinsi extends Model
     {
         return $this->hasMany(Kota::class);
     }
+
     public function pegawai_alamat()
     {
         return $this->hasMany(PegawaiAlamat::class);

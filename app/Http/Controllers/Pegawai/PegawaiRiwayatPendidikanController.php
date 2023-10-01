@@ -9,185 +9,115 @@ use App\Models\Pegawai;
 use App\Models\PegawaiRiwayatPendidikan;
 use App\Models\Pendidikan;
 use App\Models\Propinsi;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Services\PegawaiService;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\AllowedSort;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class PegawaiRiwayatPendidikanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Index',[
-            'title'=>'Riwayat Pendidikan'
+        $riwayat = PegawaiRiwayatPendidikan::with(['pegawai:id,nama', 'pendidikan:id,nama', 'propinsi:id,nama', 'kota:id,nama'])
+            ->find(request('riwayat_id'));
+
+        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Index', [
+            'title' => 'Riwayat Pendidikan Pegawai',
+            'mediaIjazahUrl' => Inertia::lazy(fn() => $riwayat?->getFirstMediaUrl('media_sertifikat')),
+            'selectedRiwayat' => Inertia::lazy(fn() => $riwayat),
+            'riwayatPendidikan' => fn() => QueryBuilder::for(PegawaiRiwayatPendidikan::class)
+                ->with(['pegawai:id,nama', 'pendidikan:id,nama'])
+                ->allowedFilters(['nama_instansi', 'no_ijazah', 'tanggal_ijazah',
+                    // Filter by relationship
+                    AllowedFilter::callback('pegawai', fn(Builder $builder, $value) => $builder
+                        ->whereRelation('pegawai', 'nama', 'like', "%$value%")),
+                    AllowedFilter::callback('pendidikan', fn(Builder $builder, $value) => $builder
+                        ->whereRelation('pendidikan', 'nama', 'like', "%$value%")),
+                ])
+                ->allowedSorts(['nama_instansi', 'no_ijazah', 'tanggal_ijazah',
+                    // Sort by relationship
+                    AllowedSort::callback('pegawai', fn(Builder $builder, $val) => $builder->orderBy(Pegawai::select('nama')
+                        ->whereColumn('pegawai.id', '=', 'pegawai_riwayat_pendidikan.pegawai_id'), $val ? 'DESC' : 'ASC')),
+                    AllowedSort::callback('pendidikan', fn(Builder $builder, $val) => $builder->orderBy(Pendidikan::select('nama')
+                        ->whereColumn('pendidikan.id', '=', 'pegawai_riwayat_pendidikan.pendidikan_id'), $val ? 'DESC' : 'ASC'))
+                ])
+                ->paginate(request('per_page', 15))
+                ->onEachSide(1)
+                ->appends(request()->query())
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $pegawai = Pegawai::getAllDataPegawai();
-        $pendidikan = Pendidikan::select('id','nama')->get();
-        $propinsi = Propinsi::select('id','nama')->get();
-        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Create',[
-            'title'=>'Tambah Riwayat Pendidikan',
-            'pegawai'=>$pegawai,
-            'pendidikan'=>$pendidikan,
-            'propinsi'=>$propinsi,
+        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Create', [
+            'title' => 'Rekam Riwayat Pendidikan',
+            'pegawai' => fn() => PegawaiService::getNamaBySearch(),
+            'pendidikan' => fn() => Pendidikan::limit(10)->get(),
+            'propinsi' => fn() => Propinsi::select('id', 'nama')->get(),
+            'kota' => Inertia::lazy(fn() => Kota::where('propinsi_id', request('propinsi_id'))->get()),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(PegawaiRiwayatPendidikanRequest $request)
     {
-        $riwayatPendidikan = new PegawaiRiwayatPendidikan();
-        $riwayatPendidikan->pegawai_id = $request->pegawai_id;
-        $riwayatPendidikan->pendidikan_id = $request->pendidikan_id;
-        $riwayatPendidikan->nama_instansi = $request->nama_instansi;
-        $riwayatPendidikan->propinsi_id = $request->propinsi_id;
-        $riwayatPendidikan->kota_id = $request->kota_id;
-        $riwayatPendidikan->alamat = $request->alamat;
-        $riwayatPendidikan->no_ijazah = $request->no_ijazah;
-        $riwayatPendidikan->tanggal_ijazah = $request->tanggal_ijazah;
-        $riwayatPendidikan->kode_gelar_depan = $request->kode_gelar_depan;
-        $riwayatPendidikan->kode_gelar_belakang = $request->kode_gelar_belakang;
-        try {
-            DB::transaction(function ()use($riwayatPendidikan){
-                $riwayatPendidikan->save();
-                $riwayatPendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
-            });
-            return redirect()->back()->with('success','riwayat pendidikan berhasil disimpan');
+        $data = $request->validated();
 
-        }catch (QueryException $e){
-            return redirect()->back()->withErrors(['query'=>'riwayat pendidikan gagal disimpan']);
+        Arr::forget($data, 'media_ijazah');
+
+        $riwayatPendidikan = PegawaiRiwayatPendidikan::create($data);
+
+        if ($request->hasFile('media_ijazah')) {
+            $riwayatPendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
         }
+
+        return to_route('riwayat-pendidikan.index')->with('toast', ['message' => 'Riwayat pendidikan berhasil disimpan']);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(PegawaiRiwayatPendidikan $riwayat_pendidikan)
     {
-        $riwayatPendidikanDetail = PegawaiRiwayatPendidikan::where('pegawai_riwayat_pendidikan.id',$id)
-            ->join('pegawai','pegawai.id','=','pegawai_riwayat_pendidikan.pegawai_id')
-            ->join('pendidikan','pendidikan.id','=','pegawai_riwayat_pendidikan.pendidikan_id')
-            ->join('propinsi','propinsi.id','=','pegawai_riwayat_pendidikan.propinsi_id')
-            ->join('kota','kota.id','=','pegawai_riwayat_pendidikan.kota_id')
-            ->select('pegawai_riwayat_pendidikan.id',DB::raw("DATE_FORMAT(tanggal_ijazah, '%d %b %Y') AS tanggal_ijazah")
-                ,DB::raw('CONCAT(pegawai.nama_depan," " ,pegawai.nama_belakang) AS nama_lengkap')
-                ,'pendidikan.nama AS nama_pendidikan'
-                ,'nama_instansi','propinsi.nama AS propinsi' ,'kota.nama AS kota','alamat','no_ijazah'
-                ,'kode_gelar_depan','kode_gelar_belakang')->first();
-        $riwayatPendidikanDetail->media_ijazah = $riwayatPendidikanDetail->getMedia("media_ijazah")[0]->getUrl();
-        if($riwayatPendidikanDetail == null){
-            return response()->json(['status'=>404,'message'=>'data tidak ditemukan'],404);
-        }else{
-            return response()->json(['status'=>200,'message'=>'OK','data'=>$riwayatPendidikanDetail],200);
-        }
-        try {
-
-        }catch (QueryException $e){
-            return response()->json(['status'=>500,'message'=>'kesalahan pada server'],500);
-        }
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $riwayatPendidikanDetail = PegawaiRiwayatPendidikan::where('id',$id)->first();
-
-        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Edit',[
-            'title'=>'Edit Riwayat Pendidikan',
-            'riwayatPendidikanDetail'=>$riwayatPendidikanDetail,
-            'propinsi'=>Propinsi::select('id','nama')->get(),
-            'pendidikan'=>Pendidikan::select('id','nama')->get(),
-            'pegawai'=>Pegawai::getAllDataPegawai(),
-            'kota'=> Kota::where('propinsi_id',$riwayatPendidikanDetail->propinsi_id)->select('id','nama')->get()
+        return Inertia::render('Pegawai/PegawaiRiwayatPendidikan/Edit', [
+            'title' => 'Edit Riwayat Pendidikan',
+            'riwayatPendidikan' => fn() => $riwayat_pendidikan,
+            'currentPegawai' => fn() => $riwayat_pendidikan->pegawai()->select('id', 'nama')->first(),
+            'pegawai' => fn() => PegawaiService::getNamaBySearch(),
+            'pendidikan' => fn() => Pendidikan::limit(10)->get(),
+            'propinsi' => fn() => Propinsi::select('id', 'nama')->get(),
+            'kota' => fn() => Kota::when($propinsi_id = request('propinsi_id'), fn(Builder $builder) => $builder
+                ->where('propinsi_id', $propinsi_id), fn(Builder $builder) => $builder
+                ->where('propinsi_id', $riwayat_pendidikan->propinsi_id))->get(),
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(PegawaiRiwayatPendidikanRequest $request, string $id)
+    public function update(PegawaiRiwayatPendidikanRequest $request, PegawaiRiwayatPendidikan $riwayat_pendidikan)
     {
-        try {
-            $riwayatPendidikan = PegawaiRiwayatPendidikan::where('id',$id)->first();
-            if ($riwayatPendidikan != null){
-                $riwayatPendidikan->pegawai_id = $request->pegawai_id;
-                $riwayatPendidikan->pendidikan_id = $request->pendidikan_id;
-                $riwayatPendidikan->nama_instansi = $request->nama_instansi;
-                $riwayatPendidikan->propinsi_id = $request->propinsi_id;
-                $riwayatPendidikan->kota_id = $request->kota_id;
-                $riwayatPendidikan->alamat = $request->alamat;
-                $riwayatPendidikan->no_ijazah = $request->no_ijazah;
-                $riwayatPendidikan->tanggal_ijazah = $request->tanggal_ijazah;
-                $riwayatPendidikan->kode_gelar_depan = $request->kode_gelar_depan;
-                $riwayatPendidikan->kode_gelar_belakang = $request->kode_gelar_belakang;
-                DB::transaction(function ()use($riwayatPendidikan, $request){
-                    $riwayatPendidikan->save();
-                    if ($request->file('media_ijazah')) {
-                        $riwayatPendidikan->clearMediaCollection('media_ijazah');
-                        $riwayatPendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
-                    }
-                });
-                return redirect()->back()->with('success','riwayat diklat berhasil diubah');
-            }
-        }catch (QueryException $e){
-            return redirect()->back()->withErrors(['query'=>'riwayat diklat gagal diubah']);
+        $data = $request->validated();
+
+        Arr::forget($data, 'media_ijazah');
+
+        $riwayat_pendidikan->update($data);
+
+        if ($request->hasFile('media_ijazah')) {
+            $riwayat_pendidikan->clearMediaCollection('media_ijazah');
+            $riwayat_pendidikan->addMediaFromRequest('media_ijazah')->toMediaCollection('media_ijazah');
         }
+
+        return to_route('riwayat-pendidikan.index')->with('toast', [
+            'message' => 'Riwayat pendidikan berhasil diubah'
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(PegawaiRiwayatPendidikan $riwayat_pendidikan)
     {
-        $riwayatPendidikan = PegawaiRiwayatPendidikan::where('id',$id)->first();
+        // File terkait riwayat pendidikan otomatis terhapus
+        $riwayat_pendidikan->delete();
 
-        if ($riwayatPendidikan ==null){
-            return redirect()->back()->withErrors([
-                'query' => 'riwayat pendidikan gagal dihapus atau tidak ditemukan'
-            ]);
-        }
-        try {
-            DB::transaction(function ()use($riwayatPendidikan){
-                if ($riwayatPendidikan->hasMedia("media_ijazah")) {
-                    $riwayatPendidikan->getMedia("media_ijazah")[0]->delete();
-                }
-                $riwayatPendidikan->delete();
-            });
-            return redirect()->back()->with('success','riwayat pendidikan berhasil dihapus');
-        }catch (QueryException $e){
-            return redirect()->withErrors(['queruy'=>'riwayat pendidikan gagal dihapus']);
-        }
-    }
-    public function getDataRiwayatPendidikan(Request $request){
-        $paginate = ($request->paginate) ? $request->paginate : 10;
-        $riwayatPendidikan = PegawaiRiwayatPendidikan::query()->when($request->cari,function ($query,$cari){
-            $query->orWhere(DB::raw("CONCAT(nama_depan,' ',nama_belakang)"),'like',"%{$cari}%");
-            $query->orWhere(DB::raw("DATE_FORMAT(tanggal_ijazah, '%d %b %Y')"),'like',"%{$cari}%");
-            $query->orWhere('pendidikan.nama','like',"%{$cari}%");
-            $query->orWhere('pegawai.nama_depan','like',"%{$cari}%");
-            $query->orWhere('pegawai.nama_belakang','like',"%{$cari}%");
-            $query->orWhere('nama_instansi','like',"%{$cari}%");
-            $query->orWhere('no_ijazah','like',"%{$cari}%");
-            $query->orWhere('tanggal_ijazah','like',"%{$cari}%");
-        })
-            ->join('pegawai','pegawai.id','=','pegawai_riwayat_pendidikan.pegawai_id')
-            ->join('pendidikan','pendidikan.id','=','pegawai_riwayat_pendidikan.pendidikan_id')
-            ->select('pegawai_riwayat_pendidikan.id',DB::raw('CONCAT(nama_depan," " ,nama_belakang) AS nama_lengkap')
-                ,DB::raw("DATE_FORMAT(tanggal_ijazah, '%d %b %Y') AS tanggal_ijazah")
-                ,'pendidikan.nama as pendidikan','nama_instansi','no_ijazah')->paginate($paginate);
-        return response()->json($riwayatPendidikan);
+        return to_route('riwayat-pendidikan.index')
+            ->with('toast', ['message' => 'Riwayat pendidikan berhasil dihapus']);
     }
 }

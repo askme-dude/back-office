@@ -28,15 +28,8 @@ const useRouteStore = defineStore("route-store", () => {
             children: [
                 {
                     icon: ArrowRightIcon,
-                    label: "Test",
-                    href: "#",
-                    permission: "test",
-                },
-                {
-                    icon: ArrowRightIcon,
-                    label: "Hirarki Unit Kerja",
-                    href: route("hirarki-unit-kerja.index"),
-                    permission: "hirarki_unit_kerja_list",
+                    label: "Data Unit Kerja",
+                    href: route("unit-kerja.index"),
                 },
             ],
         },
@@ -49,8 +42,8 @@ const useRouteStore = defineStore("route-store", () => {
             children: [
                 {
                     icon: UserIcon,
-                    label: "Profil Pegawai",
-                    href: route("profil_pegawai.index"),
+                    label: "Data Pegawai",
+                    href: route("pegawai.index"),
                 },
                 {
                     icon: Square3Stack3DIcon,
@@ -67,7 +60,6 @@ const useRouteStore = defineStore("route-store", () => {
                     icon: ArrowRightIcon,
                     label: "Riwayat Diklat",
                     href: route("riwayat-diklat.index"),
-                    permission: "riwayat_diklat_list",
                 },
                 {
                     icon: ArrowRightIcon,

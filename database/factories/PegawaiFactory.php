@@ -2,6 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Agama;
+use App\Models\JenisKawin;
+use App\Models\JenisPegawai;
+use App\Models\StatusPegawai;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,24 +20,21 @@ class PegawaiFactory extends Factory
      */
     public function definition(): array
     {
-        $firstName = fake()->unique()->firstName();
-
         return [
-            'nik' => fake()->numerify('################'),
-            'nip' => fake()->numerify('##################'),
-            'nama_depan' => $firstName,
-            'nama_belakang' => fake()->lastName(),
+            'nik' => fake()->unique()->numerify('################'),
+            'nip' => fake()->unique()->numerify('##################'),
+            'nama' => fake()->name(),
             'jenis_kelamin' => fake()->randomElement(['L', 'P']),
-            'agama_id' => fake()->numberBetween(1, 7),
-            'golongan_darah' => fake()->randomElement(['O-', 'O+', 'A+', 'A-', 'B+', 'B-', 'AB-', 'AB+']),
-            'jenis_kawin_id' => fake()->numberBetween(1, 4),
+            'agama_id' => Agama::factory(),
+            'jenis_kawin_id' => JenisKawin::factory(),
+            'jenis_pegawai_id' => JenisPegawai::factory(),
+            'status_pegawai_id' => StatusPegawai::factory(),
+            'golongan_darah' => fake()->randomElement(['O', 'A', 'B', 'AB']),
             'tempat_lahir' => fake()->city(),
             'tanggal_lahir' => fake()->dateTimeBetween('1990-01-01', '2012-12-31')->format('Y-m-d'),
-            'email_kantor' => fake()->toLower($firstName) . '@office.com',
-            'email_pribadi' => fake()->toLower($firstName) . '@private.com',
+            'email_kantor' => fake()->email(),
+            'email_pribadi' => fake()->email(),
             'no_telp' => fake()->numerify('#############'),
-            'jenis_pegawai_id' => fake()->numberBetween(1, 19),
-            'status_pegawai_id' => fake()->numberBetween(1, 3),
             'status_dinas' => fake()->boolean(),
             'no_bpjs' => fake()->numerify('#############'),
             'no_kartu_pegawai' => fake()->numerify('#########'),

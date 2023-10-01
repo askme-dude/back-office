@@ -12,8 +12,8 @@ return new class extends Migration {
     {
         Schema::create('pegawai', function (Blueprint $table) {
             $table->id();
-            $table->string('nik', 16);
-            $table->string('nip', 18);
+            $table->string('nik', 16)->unique();
+            $table->string('nip', 18)->unique();
             $table->string('nama');
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->unsignedTinyInteger('agama_id');
@@ -37,10 +37,10 @@ return new class extends Migration {
             $table->string('no_enroll', 50)->nullable()->comment('no_urut_finger');
 
             $table->timestamps();
-            $table->foreign('agama_id')->references('id')->on('agama')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('jenis_kawin_id')->references('id')->on('jenis_kawin')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('jenis_pegawai_id')->references('id')->on('jenis_pegawai')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('status_pegawai_id')->references('id')->on('status_pegawai')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('agama_id')->references('id')->on('agama')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('jenis_kawin_id')->references('id')->on('jenis_kawin')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('jenis_pegawai_id')->references('id')->on('jenis_pegawai')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('status_pegawai_id')->references('id')->on('status_pegawai')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

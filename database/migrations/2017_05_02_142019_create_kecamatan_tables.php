@@ -7,9 +7,9 @@
  *
  */
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateKecamatanTables extends Migration
 {
@@ -20,14 +20,10 @@ class CreateKecamatanTables extends Migration
      */
     public function up()
     {
-        Schema::create('kecamatan', function(Blueprint $table){
+        Schema::create('kecamatan', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('kota_id');
+            $table->foreignId('kota_id')->constrained('kota')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('nama', 50);
-            $table->foreign('kota_id')
-                ->references('id')
-                ->on('kota')
-                ->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

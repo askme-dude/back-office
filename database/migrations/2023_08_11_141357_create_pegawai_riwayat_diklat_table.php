@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,18 +12,17 @@ return new class extends Migration
     {
         Schema::create('pegawai_riwayat_diklat', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('pegawai_id');
-            $table->unsignedTinyInteger('jenis_diklat_id');
+            $table->foreignId('pegawai_id')->constrained('pegawai')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('jenis_diklat_id')->constrained('jenis_diklat')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->text('nama');
             $table->date('tanggal_mulai');
             $table->date('tanggal_akhir');
             $table->integer('jam_pelajaran');
             $table->text('lokasi');
-            $table->string('penyelenggaran', 100);
+            $table->string('penyelenggara');
             $table->string('no_sertifikat', 100);
             $table->date('tanggal_sertifikat');
             $table->timestamps();
-            $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('jenis_diklat_id')->references('id')->on('jenis_diklat')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

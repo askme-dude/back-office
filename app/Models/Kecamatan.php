@@ -10,29 +10,15 @@
 namespace App\Models;
 
 use AzisHapidin\IndoRegion\Traits\DistrictTrait;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Kota;
-use App\Models\Desa;
 
-/**
- * Kecamatan Model.
- */
 class Kecamatan extends Model
 {
-    use DistrictTrait;
+    use DistrictTrait, HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'kecamatan';
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
+    public $timestamps = false;
     protected $hidden = [
         'kota_id'
     ];
@@ -56,6 +42,7 @@ class Kecamatan extends Model
     {
         return $this->hasMany(Desa::class);
     }
+
     public function pegawai_alamat()
     {
         return $this->hasMany(PegawaiAlamat::class);

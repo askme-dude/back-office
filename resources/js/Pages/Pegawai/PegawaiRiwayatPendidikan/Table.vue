@@ -1,11 +1,9 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
-import Table from "@/Pages/HirarkiUnitKerja/Table.vue";
 import { onMounted, ref, watch } from "vue";
 import { debounce } from "lodash";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { PencilSquareIcon } from "@heroicons/vue/24/outline/index.js";
 
 const addRiwayatPendidikan = () => {
     router.get(route("riwayat-pendidikan.create"));
@@ -16,12 +14,26 @@ onMounted(() => {
 });
 const paginate = ref(10);
 const cari = ref("");
-watch(cari,debounce((value) => {
-    getRiwayatPendidikan(route("riwayat-pendidikan.getdata") + "?cari=" + value + "&paginate=" + paginate.value );
-}, 500),
+watch(
+    cari,
+    debounce((value) => {
+        getRiwayatPendidikan(
+            route("riwayat-pendidikan.getdata") +
+                "?cari=" +
+                value +
+                "&paginate=" +
+                paginate.value,
+        );
+    }, 500),
 );
 watch(paginate, (value) => {
-    getRiwayatPendidikan(route("riwayat-pendidikan.getdata") + "?cari=" +cari.value + "&paginate=" +value, );
+    getRiwayatPendidikan(
+        route("riwayat-pendidikan.getdata") +
+            "?cari=" +
+            cari.value +
+            "&paginate=" +
+            value,
+    );
 });
 const getRiwayatPendidikan = async (value) => {
     const result = await axios.get(value);
@@ -33,7 +45,7 @@ const toShow = (id) => {
 };
 const toEdit = (id) => {
     console.log(id);
-    router.get(route('riwayat-pendidikan.edit', id))
+    router.get(route("riwayat-pendidikan.edit", id));
 };
 const toDelete = (id) => {
     Swal.fire({
@@ -146,7 +158,7 @@ const resetRiwayatPendidikanDetail = () => {
                         <div class="dropdown dropdown-left">
                             <div class="join">
                                 <button
-                                    class="btn-primary btn-outline join-item tooltip btn-xs tooltip-bottom"
+                                    class="tooltip btn-primary btn-outline join-item btn-xs tooltip-bottom"
                                     data-tip="Edit"
                                     @click="toEdit(riwayat.id)"
                                 >
@@ -166,7 +178,7 @@ const resetRiwayatPendidikanDetail = () => {
                                     </svg>
                                 </button>
                                 <button
-                                    class="btn-info btn-outline join-item tooltip btn-xs tooltip-bottom"
+                                    class="tooltip btn-info btn-outline join-item btn-xs tooltip-bottom"
                                     data-tip="Detail"
                                     @click="toShow(riwayat.id)"
                                 >
@@ -191,7 +203,7 @@ const resetRiwayatPendidikanDetail = () => {
                                     </svg>
                                 </button>
                                 <button
-                                    class="btn-error btn-outline join-item tooltip btn-xs tooltip-bottom"
+                                    class="tooltip btn-error btn-outline join-item btn-xs tooltip-bottom"
                                     data-tip="Hapus"
                                     @click="toDelete(riwayat.id)"
                                 >
@@ -275,7 +287,7 @@ const resetRiwayatPendidikanDetail = () => {
                     </tr>
                     <tr>
                         <td>Alamat</td>
-                        <td v-html="riwayatPendidikanDetail.alamat"></td>
+                        <td v-html="riwayatPendidikanDetail.row"></td>
                     </tr>
                     <tr>
                         <td>No Ijazah</td>
@@ -297,7 +309,9 @@ const resetRiwayatPendidikanDetail = () => {
                         <td>File Ijazah</td>
                         <td>
                             <a
-                                :href="'//' + riwayatPendidikanDetail.media_ijazah"
+                                :href="
+                                    '//' + riwayatPendidikanDetail.media_ijazah
+                                "
                                 target="_blank"
                                 class="tooltip tooltip-right"
                                 data-tip="Unduh"

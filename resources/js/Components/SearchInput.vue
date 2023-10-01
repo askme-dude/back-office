@@ -1,15 +1,39 @@
 <script setup>
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline/index.js";
+import { onMounted, watch } from "vue";
+import { debounce } from "lodash";
 
-defineProps({
+const props = defineProps({
     placeholder: {
         type: String,
         default: "Cari",
     },
-    modelValue: String,
+    modelValue: {
+        type: String,
+        required: true,
+    },
+    search: {
+        type: Function,
+        required: true,
+    },
 });
 
-defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
+
+onMounted(() => {
+    const params = route().params;
+
+    if (params.filter) {
+        const [value] = Object.values(params.filter);
+
+        emit("update:modelValue", value);
+    }
+});
+
+watch(
+    () => props.modelValue,
+    debounce(() => props.search(), 300),
+);
 </script>
 
 <template>

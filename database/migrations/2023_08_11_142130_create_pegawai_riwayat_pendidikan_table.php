@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,19 +12,17 @@ return new class extends Migration
     {
         Schema::create('pegawai_riwayat_pendidikan', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('pegawai_id');
-            $table->unsignedBigInteger('pendidikan_id');
+            $table->foreignId('pegawai_id')->constrained('pegawai')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreignId('pendidikan_id')->nullable()->constrained('pendidikan')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('propinsi_id')->nullable()->constrained('propinsi')->nullOnDelete()->cascadeOnUpdate();
+            $table->foreignId('kota_id')->nullable()->constrained('kota')->nullOnDelete()->cascadeOnUpdate();
             $table->string('nama_instansi')->comment('nama tempat pendidikannya');
-            $table->unsignedInteger('propinsi_id');
-            $table->unsignedBigInteger('kota_id');
             $table->text('alamat');
             $table->string('no_ijazah', 100);
-            $table->date('tanggal_ijazah', 100);
-            $table->string('kode_gelar_depan', 10);
-            $table->string('kode_gelar_belakang', 10);
+            $table->date('tanggal_ijazah');
+            $table->string('kode_gelar_depan', 10)->nullable();
+            $table->string('kode_gelar_belakang', 10)->nullable();
             $table->timestamps();
-            $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('pendidikan_id')->references('id')->on('pendidikan')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

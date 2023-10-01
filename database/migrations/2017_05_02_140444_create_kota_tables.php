@@ -7,9 +7,9 @@
  *
  */
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateKotaTables extends Migration
 {
@@ -20,14 +20,10 @@ class CreateKotaTables extends Migration
      */
     public function up()
     {
-        Schema::create('kota', function(Blueprint $table){
+        Schema::create('kota', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('propinsi_id');
+            $table->foreignId('propinsi_id')->constrained('propinsi')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('nama', 50);
-            $table->foreign('propinsi_id')
-                ->references('id')
-                ->on('propinsi')
-                ->onUpdate('cascade')->onDelete('restrict');
         });
     }
 

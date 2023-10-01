@@ -6,8 +6,9 @@ export async function useConfirm(params?: {
     confirmButtonText?: string;
 }): Promise<boolean> {
     const { isConfirmed } = await Swal.fire({
-        title: params?.title || "Konfirmasi",
+        title: params?.title || "Apakah Anda Yakin?",
         text: params?.text,
+        icon: "warning",
         showConfirmButton: true,
         showCancelButton: true,
         confirmButtonText: params?.confirmButtonText || "OK",
@@ -39,7 +40,7 @@ export function useToast({
     Swal.fire({
         toast: true,
         text,
-        icon,
+        icon: icon || "success",
         position: "top-end",
         timer: 2500,
         timerProgressBar: true,

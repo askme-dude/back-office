@@ -6,7 +6,10 @@ import {
 import { computed } from "vue";
 
 const props = defineProps({
-    links: Array,
+    links: {
+        type: Array,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["goToPage"]);
@@ -19,9 +22,9 @@ const goToPage = (link) => {
         return;
     }
 
-    if (link.label.includes("previous")) {
+    if (link.label.toLowerCase().includes("sebelumnya")) {
         pageNumber = Number(activeLink.value.label) - 1;
-    } else if (link.label.includes("next")) {
+    } else if (link.label.toLowerCase().includes("berikutnya")) {
         pageNumber = Number(activeLink.value.label) + 1;
     } else {
         pageNumber = link.label;

@@ -1,201 +1,70 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
 import { router, useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
-import vSelect from "vue-select";
-import Swal from "sweetalert2";
-const props = defineProps({
-    title:'',
-    pegawai:'',
-    jenis_diklat:''
-})
+import FormBody from "@/Pages/Pegawai/PegawaiRiwayatDiklat/components/FormBody.vue";
+import { useToast } from "@/Composables/sweetalert.ts";
+import Breadcrumb from "@/Components/Breadcrumb.vue";
+
+const props = defineProps(["title"]);
+
 const form = useForm({
-    pegawai_id:'',
-    jenis_diklat_id:'',
-    tanggal_mulai:'',
-    tanggal_akhir:'',
-    jam_pelajaran:'',
-    lokasi:'',
-    penyelenggaran:'',
-    no_sertifikat:'',
-    tanggal_sertifikat:'',
-    media_sertifikat:''
-})
-const saveRiwayatDiklat = ()=>{
-    form.post(route('riwayat-diklat.store'),{
-        onSuccess:(response)=>{
-            Swal.fire({
-                title: 'Tersimpan!',
-                text: response.props.success,
-                icon: 'success',
-                confirmButtonText: 'OK'
-            })
-            router.get(route('riwayat-diklat.index'))
-        },
-        onError:(errors)=>{
-            if(errors.query){
-                Swal.fire({
-                    title: 'Gagal!',
-                    text: errors.query,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                })
-            }
-        }
-    })
-}
-const selectedPegawai = computed({
-    get(){
-        return props.pegawai.find(peg => peg.id === form.pegawai_id)
-    },
-    set(pegawai){
-        form.pegawai_id = pegawai.id
-    }
-})
-const selectedJenisDiklat = computed({
-    get(){
-        return props.jenis_diklat.find(peg => peg.id === form.jenis_diklat_id)
-    },
-    set(jenis_diklat){
-        form.jenis_diklat_id = jenis_diklat.id
-    }
-})
-const compareTanggal = ()=>{
-    if(form.tanggal_akhir !== ''){
-        if (form.tanggal_mulai > form.tanggal_akhir){
-            form.tanggal_mulai = form.tanggal_akhir
-            form.tanggal_akhir = null
-            form.errors.tanggal_akhir = 'tanggal akhir tidak boleh lebih kecil dari tanggal mulai'
-            form.errors.tanggal_mulai = 'tanggal mulai tidak boleh lebih besar dari tanggal akhir'
-        }else{
-            form.errors.tanggal_akhir = null
-            form.errors.tanggal_mulai = null
-        }
-    }else{
-        form.errors.tanggal_akhir = null
-        form.errors.tanggal_mulai = null
-    }
-}
-const minDate = ()=>{
-    return new Date(form.tanggal_akhir)
+    pegawai_id: null,
+    nama: null,
+    jenis_diklat_id: null,
+    tanggal_mulai: null,
+    tanggal_akhir: null,
+    jam_pelajaran: null,
+    lokasi: null,
+    penyelenggara: null,
+    no_sertifikat: null,
+    tanggal_sertifikat: null,
+    media_sertifikat: null,
+});
+const submit = () => {
+    form.post(route("riwayat-diklat.store"), {
+        onError: (errors) =>
+            useToast({ icon: "error", text: Object.values(errors)[0] }),
+    });
 };
 </script>
 
 <template>
-    <div class="text-sm breadcrumbs">
-        <ul>
-            <li><a>Beranda</a></li>
-            <li>Pegawai</li>
-            <li><a @click="()=>{router.get(route('riwayat-diklat.index'))}">Riwayat Diklat</a></li>
-            <li><span class="text-info">{{title}}</span></li>
-        </ul>
-    </div>
-    <MainCard :title="title">
-        <div class="w-full p-6 m-auto lg:max-w-xl">
-            <h2 class="text-2xl font-semibold text-center text-gray-700">{{title}}</h2>
-            <form class="space-y-4" @submit.prevent="saveRiwayatDiklat">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Pegawai</span>
-                    </label>
-                    <vSelect v-model="selectedPegawai" :options="pegawai" label="nama_lengkap" class="w-full">
-                    </vSelect>
-                    <label class="label">
-                        <span v-if="form.errors.pegawai_id" class="label-text-alt text-error">{{form.errors.pegawai_id}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Jenis Diklat</span>
-                    </label>
-                    <vSelect v-model="selectedJenisDiklat" :options="jenis_diklat" label="nama" class="w-full">
-                    </vSelect>
-                    <label class="label">
-                        <span v-if="form.errors.jenis_diklat_id" class="label-text-alt text-error">{{form.errors.jenis_diklat_id}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Tanggal Mulai</span>
-                    </label>
-                    <input v-model="form.tanggal_mulai"  type="date" placeholder="Masukkan tanggal akhir" @change="compareTanggal" class="input input-bordered" />
-                    <label class="label">
-                        <span v-if="form.errors.tanggal_mulai" class="label-text-alt text-error">{{form.errors.tanggal_mulai}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Tanggal Akhir</span>
-                    </label>
-                    <input v-model="form.tanggal_akhir"  type="date" placeholder="Masukkan tanggal akhir" :min="minDate" class="input input-bordered" @change="compareTanggal"/>
-                    <label class="label">
-                        <span v-if="form.errors.tanggal_akhir" class="label-text-alt text-error">{{form.errors.tanggal_akhir}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Jam Pelajaran</span>
-                    </label>
-                    <input v-model="form.jam_pelajaran"  type="number" placeholder="Masukkan jam pelajaran" class="input input-bordered"/>
-                    <label class="label">
-                        <span v-if="form.errors.jam_pelajaran" class="label-text-alt text-error">{{form.errors.jam_pelajaran}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Lokasi</span>
-                    </label>
-                    <input v-model="form.lokasi"  type="text" placeholder="Masukkan lokasi" class="input input-bordered"/>
-                    <label class="label">
-                        <span v-if="form.errors.lokasi" class="label-text-alt text-error">{{form.errors.lokasi}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Penyelenggaran</span>
-                    </label>
-                    <input v-model="form.penyelenggaran"  type="text" placeholder="Masukkan penyelenggaran" class="input input-bordered"/>
-                    <label class="label">
-                        <span v-if="form.errors.penyelenggaran" class="label-text-alt text-error">{{form.errors.penyelenggaran}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Nomor Sertifikat</span>
-                    </label>
-                    <input v-model="form.no_sertifikat"  type="text" placeholder="Masukkan nomor sertifikat" class="input input-bordered"/>
-                    <label class="label">
-                        <span v-if="form.errors.no_sertifikat" class="label-text-alt text-error">{{form.errors.no_sertifikat}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">Tanggal Sertifikat</span>
-                    </label>
-                    <input v-model="form.tanggal_sertifikat"  type="date" placeholder="Masukkan tanggal sertifikat"  class="input input-bordered" @change="compareTanggal"/>
-                    <label class="label">
-                        <span v-if="form.errors.tanggal_sertifikat" class="label-text-alt text-error">{{form.errors.tanggal_sertifikat}}</span>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">File Sertifikat</span>
-                    </label>
-                    <input accept=".pdf,.jpg,.png,.jpeg" @input="form.media_sertifikat = $event.target.files[0]"   type="file" placeholder="Masukkan file sertifikat"  class="file-input file-input-bordered" />
-                    <label class="label">
-                        <span v-if="form.errors.media_sertifikat" class="label-text-alt text-error">{{form.errors.media_sertifikat}}</span>
-                    </label>
-                </div>
+    <Head :title="title" />
 
-                <div class="flex justify-end">
-                    <a class="btn btn-error mx-2" @click="()=>{router.get(route('riwayat-diklat.index'))}">Batal</a>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
-        </div>
+    <Breadcrumb
+        :lists="[
+            { label: 'Beranda', url: route('dashboard') },
+            { label: 'Pegawai', url: route('pegawai.index') },
+            { label: 'Diklat', url: route('riwayat-diklat.index') },
+            { label: title },
+        ]"
+    />
+
+    <MainCard :title="title">
+        <form class="mx-auto mt-8 lg:max-w-7xl" @submit.prevent="submit">
+            <FormBody
+                v-model:pegawai_id="form.pegawai_id"
+                v-model:nama="form.nama"
+                v-model:jenis_diklat_id="form.jenis_diklat_id"
+                v-model:tanggal_mulai="form.tanggal_mulai"
+                v-model:tanggal_akhir="form.tanggal_akhir"
+                v-model:jam_pelajaran="form.jam_pelajaran"
+                v-model:lokasi="form.lokasi"
+                v-model:penyelenggara="form.penyelenggara"
+                v-model:no_sertifikat="form.no_sertifikat"
+                v-model:tanggal_sertifikat="form.tanggal_sertifikat"
+                v-model:media_sertifikat="form.media_sertifikat"
+            />
+            <div class="mt-4 flex justify-end gap-2">
+                <button
+                    type="reset"
+                    class="btn btn-neutral btn-outline"
+                    @click="router.get(route('riwayat-diklat.index'))"
+                >
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
+        </form>
     </MainCard>
 </template>
-<style scoped>
-@import "vue-select/dist/vue-select.css";
-</style>
-

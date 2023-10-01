@@ -1,8 +1,17 @@
 <script setup>
 defineProps({
-    from: Number,
-    to: Number,
-    total: Number,
+    from: {
+        type: Number,
+        required: true,
+    },
+    to: {
+        type: Number,
+        required: true,
+    },
+    total: {
+        type: Number,
+        required: true,
+    },
 });
 </script>
 
