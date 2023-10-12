@@ -11,7 +11,7 @@ class TukinStoreRequest extends FormRequest
         return [
             'grade' => ['required', 'integer', 'min:1', 'max:9999'],
             'nominal' => ['required', 'integer', 'min:1', 'max:999999999999999'],
-            'keterangan' => [],
+            'keterangan' => ['max: 255'],
         ];
     }
 

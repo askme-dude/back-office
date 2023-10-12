@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Master\TukinController;
 use App\Http\Controllers\Master\UangMakanController;
+use App\Http\Controllers\Master\PegawaiStatusController;
+use App\Http\Controllers\Master\UnitKerjaController;
+
 use App\Http\Controllers\Pegawai\PegawaiAlamatController;
 use \App\Http\Controllers\Master\HirarkiUnitKerjaController;
 use Illuminate\Foundation\Application;
@@ -45,6 +48,10 @@ Route::prefix('master')->group(function (){
     Route::get('tukin/getdatatable',[TukinController::class,'getDataTable'])->name('tukin.getdatatable');
     Route::resource('umak', UangMakanController::class)->only('index','create','store','edit','update','destroy');
     Route::get('umak/getdatatable',[UangMakanController::class,'getDataTable'])->name('umak.getdatatable');
+    Route::resource('pegawai-status', PegawaiStatusController::class)->only('index','create','store','edit','update','destroy');
+    Route::get('pegawai-status/getdatatable',[PegawaiStatusController::class,'getDataTable'])->name('pegawai-status.getdatatable');
+    Route::resource('unit-kerja', UnitKerjaController::class)->only('index','create','store','edit','update','destroy');
+    Route::get('unit-kerja/getdatatable',[UnitKerjaController::class,'getDataTable'])->name('unit-kerja.getdatatable');
 });
 
 Route::middleware('auth')->group(function () {

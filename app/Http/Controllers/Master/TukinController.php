@@ -97,7 +97,7 @@ class TukinController extends Controller
                 }
             });
         }catch (\Exception $e){
-            Log::error($e->getMessage(), ['Data gagal di-update di function store pada TukinController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di function update pada TukinController!']);
 
             return redirect()->back()->withErrors([
             'query' => 'Data tukin gagal di-update!']);

@@ -63,6 +63,16 @@ const useRouteStore = defineStore("route-store", () => {
                     label: "Uang Makan",
                     href: route("umak.index")
                 },
+                {
+                    icon: ClipboardIcon,
+                    label: "Status Pegawai",
+                    href: route("pegawai-status.index")
+                },
+                {
+                    icon: ClipboardIcon,
+                    label: "Unit Kerja",
+                    href: route("unit-kerja.index")
+                },
             ],
         },
     ];

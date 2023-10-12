@@ -129,7 +129,7 @@ class UangMakanController extends Controller
                 }
             });
         }catch (\Exception $e){
-            Log::error($e->getMessage(), ['Data gagal di-update di function store pada UangMakanController!']);
+            Log::error($e->getMessage(), ['Data gagal di-update di function update pada UangMakanController!']);
 
             return redirect()->back()->withErrors([
             'query' => 'Data uang makan gagal di-update!']);
