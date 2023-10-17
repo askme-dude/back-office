@@ -16,6 +16,10 @@ use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class)->in('Feature');
 
+beforeEach(function () {
+    \Saloon\Helpers\Config::preventStrayRequests();
+});
+
 /*
 |--------------------------------------------------------------------------
 | Expectations

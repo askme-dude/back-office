@@ -28,8 +28,22 @@ const props = defineProps({
                         <div class="flex space-x-2 items-center text-white">
                             Users Settings Page! Here you can list, create, update or delete user!
                         </div>
-                        <div class="flex space-x-2 items-center" v-if="can.create">
-                            <a href="#" class="px-4 py-2 bg-green-500 uppercase text-white rounded focus:outline-none flex items-center"><span class="iconify mr-1" data-icon="gridicons:create" data-inline="false"></span> Create User</a>
+                        <div
+                            class="flex items-center space-x-2"
+                            v-if="can.create"
+                        >
+                            <Link :href="route('user.create')">
+                                <button
+                                    class="flex items-center rounded bg-green-500 px-4 py-2 uppercase text-white focus:outline-none"
+                                >
+                                    <span
+                                        class="iconify mr-1"
+                                        data-icon="gridicons:create"
+                                        data-inline="false"
+                                    ></span>
+                                    Tambah Pengguna
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

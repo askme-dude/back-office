@@ -9,15 +9,14 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
-
 class PermissionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('can:permission list', ['only' => ['index', 'show']]);
-        $this->middleware('can:permission create', ['only' => ['create', 'store']]);
-        $this->middleware('can:permission edit', ['only' => ['edit', 'update']]);
-        $this->middleware('can:permission delete', ['only' => ['destroy']]);
+        $this->middleware('can:hak_akses_list', ['only' => ['index', 'show']]);
+        $this->middleware('can:hak_akses_create', ['only' => ['create', 'store']]);
+        $this->middleware('can:hak_akses_edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:hak_akses_delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.

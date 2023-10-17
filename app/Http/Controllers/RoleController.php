@@ -15,11 +15,11 @@ class RoleController extends Controller
 
     public function __construct()
     {
-        // $this->middleware('can:role list', ['only' => ['index', 'show']]);
-        // $this->middleware('can:role create', ['only' => ['create', 'store']]);
-        // $this->middleware('can:role edit', ['only' => ['edit', 'update']]);
-        // $this->middleware('can:role delete', ['only' => ['destroy']]);
-        // $this->middleware('can:role get', ['only' => ['get']]);
+        $this->middleware('can:role_list', ['only' => ['index', 'show']]);
+        $this->middleware('can:role_create', ['only' => ['create', 'store']]);
+        $this->middleware('can:role_edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:role_delete', ['only' => ['destroy']]);
+        $this->middleware('can:role_get', ['only' => ['get']]);
     }
 
     /**
@@ -74,7 +74,20 @@ class RoleController extends Controller
         ]);
 
         try {
-            Permission::create($data);
+
+            $role = Role::create(['name' => $request->name]);
+            $permissionIds = $request->hak_akses_value;
+            for ($index = 0; $index < count($permissionIds); $index++) {
+                $element = $permissionIds[$index];
+                if ($element === true) {
+                    $permission = Permission::find($index+1);
+                    if ($permission) {
+                        // Assign the permission to the role
+                        $role->givePermissionTo($permission);
+                    }
+                }
+            }
+
             // return redirect()->route('permission.index')->with('toast', ['message', 'Data berhasil disimpan']);
         } catch (QueryException $e) {
             Log::error('terjadi kesalahan pada koneksi database  ketika simpan data :' . $e->getMessage());

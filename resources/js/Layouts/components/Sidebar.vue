@@ -21,6 +21,12 @@ router.on("navigate", () => {
             class="mx-auto mb-6 mt-2"
             alt="logo"
         />
-        <NavItem v-for="item in routes.list" :key="item.label" :item="item" />
+        <ul class="flex flex-col gap-2">
+            <NavItem
+                v-for="item in routes.list"
+                :key="item.label"
+                :item="item"
+            />
+        </ul>
     </nav>
 </template>

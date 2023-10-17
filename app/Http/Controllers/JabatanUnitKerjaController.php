@@ -19,6 +19,14 @@ use Psy\Readline\Hoa\Console;
 
 class JabatanUnitKerjaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:jabatan_tukin_list', ['only' => ['index', 'show']]);
+        $this->middleware('can:jabatan_tukin_create', ['only' => ['create', 'store']]);
+        $this->middleware('can:jabatan_tukin_edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:jabatan_tukin_delete', ['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      */

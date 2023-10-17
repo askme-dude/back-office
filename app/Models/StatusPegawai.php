@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StatusPegawai extends Model
 {
+    use HasFactory;
+    
     protected $table = 'status_pegawai';
     protected $guarded = [];
     protected $primaryKey = 'id';

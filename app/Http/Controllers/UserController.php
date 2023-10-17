@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -12,10 +13,10 @@ class UserController extends Controller
 
     public function __construct()
     {
-        // $this->middleware('can:user list', ['only' => ['index', 'show']]);
-        // $this->middleware('can:user create', ['only' => ['create', 'store']]);
-        // $this->middleware('can:user edit', ['only' => ['edit', 'update']]);
-        // $this->middleware('can:user delete', ['only' => ['destroy']]);
+        $this->middleware('can:pengguna_list', ['only' => ['index', 'show']]);
+        $this->middleware('can:pengguna_create', ['only' => ['create', 'store']]);
+        $this->middleware('can:pengguna_edit', ['only' => ['edit', 'update']]);
+        $this->middleware('can:pengguna_delete', ['only' => ['destroy']]);
     }
 
      /**
@@ -31,9 +32,9 @@ class UserController extends Controller
         return Inertia::render('User/Index', [
             'users' => $users,
             'can' => [
-                'create' => Auth::user()->can('user create'),
-                'edit' => Auth::user()->can('user edit'),
-                'delete' => Auth::user()->can('user delete'),
+                'create' => Auth::user()->can('pengguna_create'),
+                'edit' => Auth::user()->can('pengguna_edit'),
+                'delete' => Auth::user()->can('pengguna_delete'),
             ]
         ]);
     }
@@ -43,7 +44,23 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+
+        // try {
+        //     return Inertia::render('User/Create', [
+        //         'title' => 'Tambah User',
+        //         'role' => fn () =>   Role::get(),
+        //         'can' => [
+        //             'create' => Auth::user()->can('pengguna_reate'),
+        //             'edit' => Auth::user()->can('pengguna_edit'),
+        //             'delete' => Auth::user()->can('pengguna_delete'),
+        //         ]
+        //     ]);
+        // } catch (QueryException $e) {
+        //     Log::error('terjadi kesalahan pada koneksi database  ketika load create data :' . $e->getMessage());
+        //     return redirect()->back()->withErrors([
+        //         'query' => 'Load data gagal'
+        //     ]);
+        // }
     }
 
     /**

@@ -56,7 +56,28 @@ return [
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            'strict' => false,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'db_presensi' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL_PRESENSI'),
+            'host' => [env('DB_HOST_PRESENSI', '127.0.0.1')],
+            'port' => env('DB_PORT_PRESENSI', '3306'),
+            'database' => env('DB_DATABASE_PRESENSI', 'forge'),
+            'username' => env('DB_USERNAME_PRESENSI', 'forge'),
+            'password' => env('DB_PASSWORD_PRESENSI', ''),
+            'unix_socket' => env('DB_SOCKET_PRESENSI', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'sticky' => true,
+            'strict' => false,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
@@ -76,6 +97,21 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => 'prefer',
+        ],
+
+        'db_siap' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_SIAP', 'localhost'),
+            'port' => env('DB_PORT_SIAP', '1433'),
+            'database' => env('DB_DATABASE_SIAP', 'forge'),
+            'username' => env('DB_USERNAME_SIAP', 'forge'),
+            'password' => env('DB_PASSWORD_SIAP', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'encrypt' => env('DB_ENCRYPT_SIAP', 'false'),
+            'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE_SIAP', 'true'),
         ],
 
         'sqlsrv' => [
@@ -125,7 +161,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

@@ -2,16 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
-
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Permission;
-use Illuminate\Support\Str;
-
-use Illuminate\Support\Facades\Auth;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -40,7 +36,7 @@ class HandleInertiaRequests extends Middleware
 
         $userPermission = [];
 
-        if ($request->user()){
+        if ($request->user()) {
 
             $user = User::find($request->user()->id);
             if (!$user) {
@@ -54,7 +50,7 @@ class HandleInertiaRequests extends Middleware
                     // Loop permission pada role
                     foreach ($permissions as $permission) {
                         $name = $permission->name;
-                        $userPermission[Str::replace(' ', '_', $name)]= Auth::user()->can($name);
+                        $userPermission[Str::replace(' ', '_', $name)] = Auth::user()->can($name);
                     }
                 }
             }
@@ -63,15 +59,18 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
-                'akses' => $userPermission ,
+                'akses' => $userPermission,
             ],
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
                 ]);
             },
-            'toast' => fn () => $request->session()->get('toast'),
-            'success'=>fn()=>$request->session()->get('success')
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
+            'toast' => fn() => request()->session()->get('toast'),
         ]);
     }
 }
