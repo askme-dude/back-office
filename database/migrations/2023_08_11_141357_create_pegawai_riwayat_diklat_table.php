@@ -19,8 +19,8 @@ return new class extends Migration
             $table->date('tanggal_akhir');
             $table->integer('jam_pelajaran');
             $table->text('lokasi');
-            $table->string('penyelenggaran',100);
-            $table->string('no_sertifikat',100);
+            $table->string('penyelenggaran', 100);
+            $table->string('no_sertifikat', 100);
             $table->date('tanggal_sertifikat');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');

@@ -24,8 +24,6 @@ return new class extends Migration
             $table->unsignedBigInteger('pendidikan_id');
             $table->string('pekerjaan', 50);
             $table->boolean('status_tunjangan');
-            // $table->unsignedBigInteger('media_foto_pasangan_id')->nullable(true);
-            // $table->unsignedBigInteger('media_buku_nikah_id')->nullable(true);
             $table->string('no_sk_cerai', 50)->nullable(true);
             $table->date('tmt_sk_cerai')->nullable(true);
             $table->unsignedTinyInteger('jenis_kawin_id');
@@ -33,9 +31,7 @@ return new class extends Migration
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('pendidikan_id')->references('id')->on('pendidikan')->onUpdate('cascade')->onDelete('cascade');
-            //$table->foreign('media_foto_pasangan_id')->references('id')->on('media')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('jenis_kawin_id')->references('id')->on('jenis_kawin')->onUpdate('cascade')->onDelete('cascade');
-            //$table->foreign('media_buku_nikah_id')->references('id')->on('media')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

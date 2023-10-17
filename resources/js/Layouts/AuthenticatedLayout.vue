@@ -2,23 +2,27 @@
 import { Bars3Icon } from "@heroicons/vue/24/outline/index.js";
 import useRouteStore from "@/Stores/RouteStore.js";
 import Sidebar from "@/Layouts/components/Sidebar.vue";
-import ToastList from "@/Components/ToastList.vue";
+import { router, usePage } from "@inertiajs/vue3";
+import { useToast } from "@/Composables/sweetalert.ts";
 
 const routes = useRouteStore();
-defineProps({
-    title: "",
+
+router.on("finish", () => {
+    const toast = usePage().props.toast;
+    if (toast) {
+        useToast({ text: toast.message, icon: toast.icon });
+        usePage().props.toast = null;
+    }
 });
 </script>
 
 <template>
-    <Head :title="title" />
-    <div class="drawer min-h-screen">
-        <ToastList />
+    <div class="drawer min-h-screen bg-base-200">
         <Sidebar class="hidden lg:block" />
         <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
             <!-- Navbar -->
-            <div class="navbar w-full border-b">
+            <div class="navbar w-full border-b bg-base-100">
                 <div class="flex-none lg:hidden">
                     <label for="my-drawer-3" class="btn btn-square btn-ghost">
                         <Bars3Icon class="w-8" />
@@ -37,7 +41,7 @@ defineProps({
             </div>
 
             <!-- Page content here -->
-            <div class="m-4">
+            <div class="flex-1 p-4">
                 <slot />
             </div>
         </div>

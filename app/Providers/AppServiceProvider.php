@@ -5,6 +5,8 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Saloon\Http\Senders\GuzzleSender;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
+
     /**
      * Register any authentication / authorization services.
      *
@@ -30,6 +33,17 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
         });
+
+        config(['app.locale' => 'id']);
+        Carbon::setLocale('id');
     }
 
+    public function register(): void
+    {
+        $this->app->singleton(GuzzleSender::class, fn() => new GuzzleSender());
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
 }

@@ -69,7 +69,7 @@ function destroy(id) {
     <MainCard>
         <div class="overflow-x-auto">
             <div class="py-4">
-                <Link :href="route('gaji.create')">
+                <Link :href="route('gaji.create')" v-if="$page.props.auth.akses.gaji_create">
                     <button class="btn btn-primary">Tambah</button>
                 </Link>
             </div>
@@ -81,7 +81,7 @@ function destroy(id) {
                         <th>Golongan</th>
                         <th>Masa Kerja</th>
                         <th>Nominal</th>
-                        <th>Aksi</th>
+                        <th v-if="$page.props.auth.akses.gaji_edit || $page.props.auth.akses.gaji_delete>Aksi">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,13 +94,15 @@ function destroy(id) {
                         <td>{{ mdata.golongan }}</td>
                         <td>{{ mdata.masa_kerja }}</td>
                         <td>{{ rupiah(mdata.nominal) }}</td>
-                        <td>
+                        <td v-if="$page.props.auth.akses.gaji_edit || $page.props.auth.akses.gaji_delete">
                             <Link
                                 :href="route('gaji.edit', mdata.id)"
                                 class="btn btn-primary btn-xs mr-2"
-                                >Edit</Link
-                            >
+                                v-if="$page.props.auth.akses.gaji_edit"
+                                >Edit
+                            </Link>
                             <button
+                                v-if="$page.props.auth.akses.gaji_delete"
                                 class="btn btn-error btn-xs"
                                 @click="destroy(mdata.id)"
                             >

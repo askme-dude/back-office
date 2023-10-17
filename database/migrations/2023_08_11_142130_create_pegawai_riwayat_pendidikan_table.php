@@ -19,14 +19,13 @@ return new class extends Migration
             $table->unsignedInteger('propinsi_id');
             $table->unsignedBigInteger('kota_id');
             $table->text('alamat');
-            $table->string('no_ijazah',100);
-            $table->date('tanggal_ijazah',100);
-            $table->string('kode_gelar_depan',10)->nullable();
-            $table->string('kode_gelar_belakang',10)->nullable();
+            $table->string('no_ijazah', 100);
+            $table->date('tanggal_ijazah', 100);
+            $table->string('kode_gelar_depan', 10);
+            $table->string('kode_gelar_belakang', 10);
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('pendidikan_id')->references('id')->on('pendidikan')->onUpdate('cascade')->onDelete('cascade');
-
         });
     }
 

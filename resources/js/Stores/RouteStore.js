@@ -1,20 +1,14 @@
 import { defineStore } from "pinia";
 import {
-    BriefcaseIcon,
-    ClipboardIcon,
-    HomeIcon,
-    UsersIcon,
-    MapPinIcon,
-    CubeTransparentIcon,
     ArrowRightIcon,
-    LockClosedIcon
+    BriefcaseIcon,
+    CubeTransparentIcon,
+    HomeIcon,
+    LockClosedIcon,
+    Square3Stack3DIcon,
+    UserIcon,
+    UsersIcon,
 } from "@heroicons/vue/24/outline/index.js";
-import { usePage } from '@inertiajs/vue3';
-import { computed } from "vue";
-const page = usePage()
-
-const akses = computed(() => page.props.auth.akses)
-
 
 const useRouteStore = defineStore("route-store", () => {
     const list = [
@@ -23,25 +17,25 @@ const useRouteStore = defineStore("route-store", () => {
             label: "Dashboard",
             href: route("dashboard"),
             name: "dashboard",
-            permission: "dashboard",
+            // permission: "dashboard",
         },
         {
             icon: BriefcaseIcon,
             label: "Unit Kerja",
             href: "/",
             name: "work-unit.*",
-            permission: "unit_kerja",
+            // permission: "unit_kerja",
             children: [
                 {
                     icon: ArrowRightIcon,
                     label: "Test",
-                    href:"#",
+                    href: "#",
                     permission: "test",
                 },
                 {
                     icon: ArrowRightIcon,
                     label: "Hirarki Unit Kerja",
-                    href:route('hirarki-unit-kerja.index'),
+                    href: route("hirarki-unit-kerja.index"),
                     permission: "hirarki_unit_kerja_list",
                 },
             ],
@@ -53,6 +47,16 @@ const useRouteStore = defineStore("route-store", () => {
             name: "work-unit.*",
             permission: "pegawai",
             children: [
+                {
+                    icon: UserIcon,
+                    label: "Profil Pegawai",
+                    href: route("profil_pegawai.index"),
+                },
+                {
+                    icon: Square3Stack3DIcon,
+                    label: "Riwayat Jabatan Pegawai",
+                    href: route("riwayat_jabatan_pegawai.index"),
+                },
                 {
                     icon: ArrowRightIcon,
                     label: "Alamat Pegawai",
@@ -94,6 +98,25 @@ const useRouteStore = defineStore("route-store", () => {
                     label: "Saldo Cuti",
                     href: route("saldo-cuti.index"),
                     permission: "saldo_cuti_list",
+                },
+                {
+                    label: "Riwayat Penghargaan",
+                    href: route("riwayat-penghargaan.index"),
+                },
+            ],
+        },
+        {
+            icon: Square3Stack3DIcon,
+            label: "SIASN",
+            name: "siasn.*",
+            children: [
+                {
+                    label: "Data ASN",
+                    href: route("siasn-asn.index"),
+                },
+                {
+                    label: "Riwayat Penghargaan",
+                    href: route("siasn-penghargaan.index"),
                 },
             ],
         },
@@ -165,29 +188,28 @@ const useRouteStore = defineStore("route-store", () => {
                     icon: ArrowRightIcon,
                     label: "Hak Akses",
                     href: route("permission.index"),
-                    permission: "hak_akses_list",
+                    // permission: "hak_akses_list",
                 },
             ],
         },
     ];
 
     function checkPermission(strPermission, permission) {
-        console.log('check permission:' + strPermission);
-        console.log(permission[strPermission]);
+        // console.log("check permission:" + strPermission);
+        // console.log(permission[strPermission]);
 
-        if (permission[strPermission]){
-            return true;
-        }else{
-            return false;
-        }
-
+        // if (permission[strPermission]) {
+        return true;
+        // } else {
+        // return false;
+        // }
     }
 
-    const isHasAccess = (item,permission) => {
+    const isHasAccess = (item, permission) => {
         if (!item.hasOwnProperty("showIf")) {
-            if (checkPermission(item.permission,permission)){
+            if (checkPermission(item.permission, permission)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
