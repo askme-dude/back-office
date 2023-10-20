@@ -81,7 +81,7 @@ watch(paginate,value =>{
             <li><span class="text-info">Tunjangan Kinerja</span></li>
         </ul>
     </div>
-    
+
     <MainCard>
         <div class="overflow-x-auto">
             <div class="py-4 flex justify-between">
@@ -115,8 +115,8 @@ watch(paginate,value =>{
                     <td style="text-align: center;">{{tukin.nominal}}</td>
                     <td style="text-align: center;">{{tukin.keterangan}}</td>
                     <td style="text-align: center;">
-                        <button class="text-indigo-600 hover:text-indigo-900" @click="toEdit(tukin)">Edit</button>
-                        <button class="text-red-600 hover:text-red-900 ml-2" @click="toDelete(tukin)">Hapus</button>
+                        <button class="btn btn-primary btn-xs" @click="toEdit(tukin)">Edit</button>
+                        <button class="btn btn-error btn-xs" @click="toDelete(tukin)">Hapus</button>
                     </td>
                 </tr>
                 </tbody>

@@ -1,5 +1,18 @@
 <script setup>
 import MainCard from "@/Components/MainCard.vue";
+import {
+    ChevronUpDownIcon,
+    DocumentMagnifyingGlassIcon,
+} from "@heroicons/vue/24/outline/index.js";
+import Pagination from "@/Components/Pagination.vue";
+import ShowingResultTable from "@/Components/ShowingResultTable.vue";
+import { computed, ref, watch } from "vue";
+import PerPageOption from "@/Components/PerPageOption.vue";
+import { debounce } from "lodash";
+import SearchInputColumn from "@/Components/SearchInputColumn.vue";
+import { Head, Link, useForm, router, usePage } from "@inertiajs/vue3";
+import Swal from "sweetalert2";
+
 const props = defineProps({
     roles: {
         type: Object,
@@ -11,6 +24,46 @@ const props = defineProps({
     },
     title:String
 });
+
+const form = useForm({});
+
+function destroy(id) {
+    Swal.fire({
+        title: "Apakah Anda Yakin?",
+        text: "Hapus role",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Batal",
+        confirmButtonText: "Ya",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.delete(route("role.destroy", id), {
+                onSuccess: (response) => {
+                    Swal.fire(
+                        "Berhasil!",
+                        "Role berhasil dihapus.",
+                        "success",
+                    );
+                    // form.reset(); // ini untuk reset inputan tanpa merefresh halaman atau tanpa balik ke index
+                    router.get(route("role.index"));
+                },
+                onError: (errors) => {
+                    if (errors.query) {
+                        Swal.fire({
+                            title: "Gagal!",
+                            text: "Hapus role gagal",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                },
+            });
+        }
+    });
+}
+
 </script>
 <template>
     <div class="breadcrumbs text-sm">
@@ -76,20 +129,52 @@ const props = defineProps({
                                         type="justify-start lg:justify-end"
                                         no-wrap
                                     >
-                                        <BreezeButton
-                                            class="ml-4 cursor-pointer rounded bg-green-500 px-2 py-1 text-white"
+                                        <Link
                                             v-if="can.edit"
+                                            :href="
+                                                route(
+                                                    'role.edit',
+                                                    role.id,
+                                                )
+                                            "
                                         >
-                                            Edit
-                                        </BreezeButton>
-                                        <BreezeButton
-                                            class="ml-4 cursor-pointer rounded bg-red-500 px-2 py-1 text-white"
-                                            v-if="can.delete"
+                                            <button
+                                                class="ml-4 cursor-pointer rounded bg-green-500 px-2 py-1 text-white"
+                                            >
+                                                <span
+                                                    class="iconify mr-1"
+                                                    data-icon="gridicons:create"
+                                                    data-inline="false"
+                                                ></span>
+                                                Ubah
+                                            </button>
+                                        </Link>
+
+                                        <Link
+                                            v-if="can.edit"
+                                            :href="
+                                                route(
+                                                    'role.destroy',
+                                                    role.id,
+                                                )
+                                            "
+                                            @click="destroy(role.id)"
                                         >
-                                            Delete
-                                        </BreezeButton>
+                                            <button
+                                                class="ml-4 cursor-pointer rounded bg-red-500 px-2 py-1 text-white"
+                                            >
+                                                <span
+                                                    class="iconify mr-1"
+                                                    data-icon="gridicons:create"
+                                                    data-inline="false"
+                                                ></span>
+                                                Hapus
+                                            </button>
+                                        </Link>
+
                                     </div>
                                 </td>
+
                             </tr>
                         </tbody>
                     </table>

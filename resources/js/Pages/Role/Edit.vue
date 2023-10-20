@@ -1,5 +1,5 @@
 <script setup>
-  import MainCard from "@/Components/MainCard.vue";
+   import MainCard from "@/Components/MainCard.vue";
   import TextInput from "@/Components/TextInput.vue";
   import Checkbox from "@/Components/Checkbox.vue";
   import InputLabel from "@/Components/InputLabel.vue";
@@ -10,15 +10,27 @@
 
   const page = usePage();
 
-  const { permissions } = defineProps(['permissions']);
+  const props = defineProps({
+        title: String,
+        role: {
+            type: Object,
+            default: () => ({}),
+        },
+        permissions: {
+            type: Object,
+            default: () => ({}),
+        },
+        roleWithPermissions: Array,
+    });
 
   const checkAll = ref(false);
 
   const form = useForm({
-    name: "",
-    guard_name: "-",
-    hak_akses: permissions.map(permission => permission.id),
-    hak_akses_value: permissions.map(() => false),
+    id: props.role.id,
+    name: props.role.name,
+    guard_name: props.role.guard_name,
+    hak_akses: props.permissions.map(permission => permission.id),
+    hak_akses_value: props.roleWithPermissions,
   });
 
   const goBack = () => {
@@ -29,10 +41,8 @@
     console.log('OK');
     if (checkAll.value) {
       form.hak_akses_value = permissions.map(() => true);
-      form.hak_akses = permissions.map(permission => permission.id);
     } else {
       form.hak_akses_value = permissions.map(() => false);
-      form.hak_akses = [];
     }
   };
 
@@ -41,7 +51,6 @@
     };
 
   const submitForm = () => {
-
     let tot = 0;
     for (let index = 0; index < form.hak_akses_value.length; index++) {
         const element = form.hak_akses_value[index];
@@ -72,7 +81,7 @@
         confirmButtonText: "Ya",
     }).then((result) => {
         if (result.isConfirmed) {
-            form.post(route("role.store"), {
+            form.put(route("role.update",props.role.id), {
                 onSuccess: (response) => {
                     Swal.fire(
                         "Tersimpan!",

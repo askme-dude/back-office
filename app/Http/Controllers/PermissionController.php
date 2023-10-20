@@ -109,7 +109,7 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission)
     {
         $data = $request->validate([
-            'name' => 'required|unique:permissions,name',
+            'name' => 'required|unique:permissions,name,' . $request->input('id') . ',id',
             'guard_name' => ['required'],
         ], [
             'name.required' => 'Nama Hak Akses harus diisi',
