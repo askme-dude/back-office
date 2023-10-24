@@ -143,7 +143,7 @@ class BasicAdminPermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@mail.com',
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt('@Bsn2023'),
         ]);
         $user->assignRole($role3);
 
@@ -151,14 +151,14 @@ class BasicAdminPermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@mail.com',
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt('@Bsn2023'),
         ]);
         $user->assignRole($role1);
 
         $user = \App\Models\User::factory()->create([
             'name' => 'Example User',
             'email' => 'test@mail.com',
-            'password' => bcrypt('12345678'),
+            'password' => bcrypt('@Bsn2023'),
         ]);
         $user->assignRole($role2);
     }
