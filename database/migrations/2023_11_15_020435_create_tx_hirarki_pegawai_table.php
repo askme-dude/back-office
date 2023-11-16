@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('tx_hirarki_pegawai', function (Blueprint $table) {
             $table->id();
-            $table->string('username')->unique();
             $table->unsignedBigInteger('pegawai_id');
-            $table->boolean('is_active');
-            $table->foreign('pegawai_id')
-                ->references('id')
-                ->on('pegawai')
-                ->onUpdate('cascade')->onDelete('restrict');
+            $table->unsignedBigInteger('pegawai_pimpinan_id');
             $table->timestamps();
+            $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('pegawai_pimpinan_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('tx_hirarki_pegawai');
     }
 };

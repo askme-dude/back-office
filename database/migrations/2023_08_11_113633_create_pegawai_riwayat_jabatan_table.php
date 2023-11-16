@@ -22,10 +22,12 @@ return new class extends Migration
             $table->date('tmt_jabatan');
             $table->string('pejabat_penetap', 50);
             $table->boolean('is_plt');
-            $table->boolean('is_current');
+            $table->boolean('is_now');
+            $table->unsignedTinyInteger('tx_tipe_jabatan_id');
             $table->timestamps();
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('jabatan_unit_kerja_id')->references('id')->on('jabatan_unit_kerja')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('tx_tipe_jabatan_id')->references('id')->on('tx_tipe_jabatan')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

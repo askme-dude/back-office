@@ -17,24 +17,24 @@ return new class extends Migration
             $table->unsignedTinyInteger('jenis_cuti_id');
             $table->date('tanggal_awal_cuti');
             $table->date('tanggal_akhir_cuti');
+            $table->tinyInteger('lama_cuti')->nullable(false);
             $table->string('alasan');
             $table->string('alamat_cuti');
-            $table->string('no_telepon_cuti',15);
-            $table->unsignedBigInteger('atasan_pertama_id')->nullable(true);
-            $table->date('tanggal_approve_ap')->comment('ap : atasan_pertama , ak : atasan kedua')->nullable(true);
-            $table->unsignedBigInteger('atasan_kedua_id')->nullable(true);
-            $table->date('tanggal_approve_ak')->comment('ap : atasan_pertama , ak : atasan kedua')->nullable(true);
+            $table->string('no_telepon_cuti', 15);
+            $table->unsignedBigInteger('atasan_langsung_id')->nullable(true);
+            $table->date('tanggal_approve_al')->comment('al : atasan_langsung')->nullable(true);
+            $table->unsignedBigInteger('kabiro_sdmoh_id')->nullable(true);
+            $table->date('tanggal_approve_akb')->comment('akb : atasan sdmoh')->nullable(true);
             $table->date('tanggal_penolakan_cuti')->nullable(true)->nullable(true);
             $table->unsignedTinyInteger('status_pengajuan_cuti_id')->nullable(true);
-            $table->string('alasan_penolakan_cuti')->nullable(true);
+            $table->string('keterangan')->nullable(true);
             $table->timestamps();
 
             $table->foreign('pegawai_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('jenis_cuti_id')->references('id')->on('jenis_cuti')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('atasan_pertama_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('atasan_kedua_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('atasan_langsung_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('kabiro_sdmoh_id')->references('id')->on('pegawai')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('status_pengajuan_cuti_id')->references('id')->on('status_cuti')->onUpdate('cascade')->onDelete('cascade');
-
         });
     }
 
