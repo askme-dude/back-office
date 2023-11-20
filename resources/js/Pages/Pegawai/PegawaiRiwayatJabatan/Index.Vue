@@ -8,6 +8,7 @@ import { useNoPhotoUrl } from "@/Composables/helpers.ts";
 
 defineProps({
     pegawai: Object,
+    data: Object,
     media_foto_pegawai: String,
 });
 
@@ -92,11 +93,7 @@ const noPhotoUrl = useNoPhotoUrl();
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr
-                                                v-for="(
-                                                    item, index
-                                                ) in pegawai.pegawai_riwayat_jabatan"
-                                            >
+                                            <tr v-for="(item, index) in data">
                                                 <td>
                                                     {{ index + 1 }}
                                                 </td>
@@ -111,7 +108,7 @@ const noPhotoUrl = useNoPhotoUrl();
                                             </tr>
                                         </tbody>
                                     </table>
-                                    {{ pegawai.pegawai_riwayat_jabatan }}
+                                    {{ data }}
                                 </div>
                             </td>
                         </tr>

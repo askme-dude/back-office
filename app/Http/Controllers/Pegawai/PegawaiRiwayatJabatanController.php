@@ -7,6 +7,7 @@ use App\Models\Pegawai;
 use App\Models\UnitKerja;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class PegawaiRiwayatJabatanController extends Controller
 {
@@ -23,10 +24,24 @@ class PegawaiRiwayatJabatanController extends Controller
             ]
         ]);
 
-        // dd($profil_pegawai->pegawai_riwayat_jabatan()->get());
+        $data = DB::table('pegawai')
+            ->join('pegawai_riwayat_jabatan', 'pegawai.id', '=', 'pegawai_riwayat_jabatan.pegawai_id')
+            ->join('jabatan_unit_kerja', 'jabatan_unit_kerja.id', '=', 'pegawai_riwayat_jabatan.jabatan_unit_kerja_id')
+            ->join('jabatan_tukin', 'jabatan_tukin.id', '=', 'jabatan_unit_kerja.jabatan_tukin_id')
+            ->join('hirarki_unit_kerja', 'hirarki_unit_kerja.id', '=', 'jabatan_unit_kerja.hirarki_unit_kerja_id')
+            ->join('jabatan', 'jabatan.id', '=', 'jabatan_tukin.jabatan_id')
+            ->join('jenis_jabatan', 'jenis_jabatan.id', '=', 'jabatan_tukin.jenis_jabatan_id')
+            ->join('tukin', 'tukin.id', '=', 'jabatan_tukin.tukin_id')
+            ->join('unit_kerja', 'unit_kerja.id', '=', 'hirarki_unit_kerja.child_unit_kerja_id')
+            ->select('*')
+            ->where('pegawai.id', $profil_pegawai->id)
+            ->get();
+
+        // dd($data);
 
         return Inertia::render('Pegawai/PegawaiRiwayatJabatan/Index', [
             'pegawai' => fn () => $profil_pegawai,
+            'data' => fn () => $data,
             'media_foto_pegawai' => fn () => $profil_pegawai->getFirstMediaUrl('media_foto_pegawai'),
         ]);
     }
